@@ -1,5 +1,7 @@
 # TriadexMuse
 
+![The Triadex Muse implemented in SuperCollider](docs/img/sc-interface-full.png)
+
 A SuperCollider implementation of the **Triadex Muse** (Edward Fredkin and
 Marvin Minsky, MIT, 1969/1972) -- a deterministic algorithmic music composer
 built from binary counters, a 31-bit linear feedback shift register, and an
@@ -43,6 +45,20 @@ and GUI so the bare sequencing logic can be read on its own.
 A longer study of the sequencing algorithm and the combinatorics behind the
 slider system is on my website:
 <https://www.marcinpietruszewski.com/research-triadex>.
+
+### Source diagrams
+
+Logic diagrams from the original patent, US 3,610,801 (Fredkin and Minsky):
+
+![US 3,610,801, drawing sheet 2](docs/img/US3610801-drawings-page-2.png)
+
+![US 3,610,801, drawing sheet 3](docs/img/US3610801-drawings-page-3.png)
+
+![US 3,610,801, drawing sheet 4](docs/img/US3610801-drawings-page-4.png)
+
+A diagram of the sequencing logic worked out during the study:
+
+![Sequencing logic diagram](docs/img/Screenshot%202026-05-18%20at%2010.08.04.png)
 
 ## Features
 
