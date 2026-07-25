@@ -1,0 +1,615 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Triadex Muse — Clock Tick Visualiser</title>
+<style>
+  @font-face {
+    font-family: 'LL Riforma Mono';
+    src: url('fonts/riforma-mono-otf/RiformaMonoLL-Light.otf') format('opentype');
+    font-weight: 300; font-style: normal; font-display: swap;
+  }
+  @font-face {
+    font-family: 'LL Riforma Mono';
+    src: url('fonts/riforma-mono-otf/RiformaMonoLL-Regular.otf') format('opentype');
+    font-weight: 400; font-style: normal; font-display: swap;
+  }
+  @font-face {
+    font-family: 'LL Riforma Mono';
+    src: url('fonts/riforma-mono-otf/RiformaMonoLL-Bold.otf') format('opentype');
+    font-weight: 700; font-style: normal; font-display: swap;
+  }
+
+  :root {
+    --bg: #ffffff;
+    --fg: #0a0a0a;
+    --muted: #6b6b6b;
+    --accent: #1a4dff;
+    --on: #0a0a0a;
+    --on-fg: #ffffff;
+    --changed: #1a4dff;
+    --mono: 'LL Riforma Mono', 'SF Mono', Menlo, Consolas, monospace;
+  }
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+  html, body {
+    background: var(--bg); color: var(--fg);
+    font-family: var(--mono);
+    font-size: 12px; line-height: 1.4;
+    -webkit-font-smoothing: antialiased;
+  }
+
+  .frame { max-width: 1400px; margin: 0 auto; padding: 32px 48px; }
+
+  /* ── Header ─────────────────────────── */
+  .head {
+    display: flex; justify-content: space-between; align-items: baseline;
+    padding-bottom: 16px; border-bottom: 1px solid var(--fg);
+    margin-bottom: 32px;
+  }
+  .head h1 { font-size: 13px; font-weight: 400; letter-spacing: 0.05em; text-transform: uppercase; }
+  .head .step-label { font-size: 11px; color: var(--muted); }
+
+  /* ── Controls ───────────────────────── */
+  .controls {
+    display: flex; gap: 0; margin-bottom: 32px;
+    border: 1px solid var(--fg);
+  }
+  .controls button {
+    font-family: var(--mono); font-size: 11px; font-weight: 700;
+    letter-spacing: 0.12em; text-transform: uppercase;
+    padding: 14px 24px; background: var(--bg); color: var(--fg);
+    border: none; border-right: 1px solid var(--fg);
+    cursor: pointer; transition: background 0.08s, color 0.08s;
+  }
+  .controls button:last-child { border-right: none; }
+  .controls button:hover { background: var(--fg); color: var(--bg); }
+  .controls button.active { background: var(--fg); color: var(--bg); }
+  .controls .spacer { flex: 1; }
+  .controls .info {
+    padding: 14px 24px; font-size: 11px; color: var(--muted);
+    display: flex; align-items: center;
+  }
+
+  /* ── Preset selector ────────────────── */
+  .preset-row {
+    display: flex; gap: 0; margin-bottom: 32px;
+    border: 1px solid var(--fg); border-top: none;
+    margin-top: -32px;
+  }
+  .preset-row .lbl {
+    padding: 10px 16px; font-size: 10px; font-weight: 700;
+    letter-spacing: 0.12em; text-transform: uppercase;
+    border-right: 1px solid var(--fg);
+    display: flex; align-items: center;
+  }
+  .preset-row button {
+    font-family: var(--mono); font-size: 11px; font-weight: 400;
+    padding: 10px 16px; background: var(--bg); color: var(--fg);
+    border: none; border-right: 1px solid var(--fg);
+    cursor: pointer; transition: background 0.08s, color 0.08s;
+  }
+  .preset-row button:hover { background: var(--fg); color: var(--bg); }
+  .preset-row button.active { background: var(--fg); color: var(--bg); font-weight: 700; }
+
+  /* ── Stage grid ─────────────────────── */
+  .stages {
+    display: grid;
+    grid-template-columns: 100px 200px 280px 200px 120px;
+    gap: 24px;
+    align-items: start;
+  }
+  .stage-label {
+    font-size: 9px; font-weight: 700; letter-spacing: 0.12em;
+    text-transform: uppercase; color: var(--accent);
+    margin-bottom: 12px; padding-bottom: 6px;
+    border-bottom: 1px solid var(--accent);
+  }
+
+  /* ── Block ──────────────────────────── */
+  .block {
+    border: 1px solid var(--fg); margin-bottom: 16px;
+    transition: border-color 0.15s;
+  }
+  .block.highlight { border-color: var(--accent); box-shadow: 0 0 0 1px var(--accent); }
+  .block-head {
+    padding: 8px 10px; border-bottom: 1px solid var(--fg);
+    font-size: 10px; font-weight: 700; letter-spacing: 0.08em;
+    text-transform: uppercase;
+  }
+  .block-body { padding: 10px; }
+
+  /* ── Bit display ────────────────────── */
+  .bits { display: flex; gap: 2px; flex-wrap: wrap; }
+  .bit {
+    width: 18px; height: 18px;
+    display: flex; align-items: center; justify-content: center;
+    font-size: 10px; font-weight: 700;
+    border: 1px solid var(--fg);
+    transition: background 0.12s, color 0.12s, border-color 0.12s;
+  }
+  .bit.on { background: var(--on); color: var(--on-fg); }
+  .bit.changed { border-color: var(--accent); background: var(--accent); color: #fff; }
+
+  .bit-label {
+    font-size: 9px; color: var(--muted); margin-top: 2px;
+    display: flex; gap: 2px; flex-wrap: wrap;
+  }
+  .bit-label span { width: 18px; text-align: center; }
+
+  /* ── Slider display ─────────────────── */
+  .slider-row {
+    display: grid; grid-template-columns: 60px 1fr; gap: 8px;
+    padding: 4px 0; font-size: 10px; align-items: center;
+    border-bottom: 1px solid #eee;
+  }
+  .slider-row:last-child { border-bottom: none; }
+  .slider-name { color: var(--muted); }
+  .slider-val { font-weight: 700; }
+  .slider-val.changed { color: var(--accent); }
+
+  /* ── XNOR result ────────────────────── */
+  .xnor-result {
+    font-size: 28px; font-weight: 300; text-align: center;
+    padding: 12px 0; letter-spacing: -0.02em;
+    transition: color 0.15s;
+  }
+  .xnor-result.changed { color: var(--accent); }
+  .xnor-detail { font-size: 10px; color: var(--muted); text-align: center; margin-top: 4px; }
+
+  /* ── Pitch output ───────────────────── */
+  .pitch-display {
+    font-size: 32px; font-weight: 300; text-align: center;
+    padding: 8px 0; letter-spacing: -0.02em;
+  }
+  .pitch-detail { font-size: 10px; color: var(--muted); text-align: center; }
+
+  /* ── Note readout ───────────────────── */
+  .output-box {
+    background: var(--fg); color: var(--on-fg);
+    text-align: center; padding: 16px 10px;
+  }
+  .output-pitch { font-size: 24px; font-weight: 300; letter-spacing: -0.02em; }
+  .output-note { font-size: 10px; margin-top: 4px; color: #999; }
+
+  /* ── Melody history ─────────────────── */
+  .melody {
+    margin-top: 32px; border-top: 1px solid var(--fg);
+    padding-top: 16px;
+  }
+  .melody-label { font-size: 10px; font-weight: 700; letter-spacing: 0.1em; text-transform: uppercase; color: var(--muted); margin-bottom: 10px; }
+  .melody-strip {
+    display: flex; gap: 1px; height: 80px; align-items: flex-end;
+    border-bottom: 1px solid var(--fg);
+  }
+  .mel-bar {
+    flex: 1; max-width: 12px; min-width: 4px;
+    background: var(--fg);
+    transition: height 0.1s, background 0.1s;
+  }
+  .mel-bar.latest { background: var(--accent); }
+  .mel-bar.rest { background: #ddd; }
+
+  /* ── Log ─────────────────────────────── */
+  .log {
+    margin-top: 24px; border-top: 1px solid var(--fg);
+    padding-top: 16px;
+  }
+  .log-label { font-size: 10px; font-weight: 700; letter-spacing: 0.1em; text-transform: uppercase; color: var(--muted); margin-bottom: 10px; }
+  .log-entries {
+    font-size: 11px; line-height: 1.6; max-height: 200px;
+    overflow-y: auto; color: var(--muted);
+  }
+  .log-entries .entry { padding: 2px 0; border-bottom: 1px solid #f0f0f0; }
+  .log-entries .entry .step-n { color: var(--fg); font-weight: 700; display: inline-block; width: 48px; }
+  .log-entries .entry .action { color: var(--accent); }
+
+  /* ── Responsive ─────────────────────── */
+  @media (max-width: 1100px) {
+    .stages { grid-template-columns: 1fr; }
+    .frame { padding: 20px; }
+  }
+</style>
+</head>
+<body>
+<div class="frame">
+
+  <div class="head">
+    <h1>Triadex Muse — Clock Tick Visualiser</h1>
+    <div class="step-label">step <span id="step-num">0</span></div>
+  </div>
+
+  <div class="controls">
+    <button id="btn-tick">Tick</button>
+    <button id="btn-auto">Auto</button>
+    <button id="btn-reset">Reset</button>
+    <div class="spacer"></div>
+    <div class="info">tempo: <span id="tempo-v">4</span> Hz</div>
+    <div class="info">
+      <input type="range" id="tempo" min="1" max="20" value="4" style="width:80px;margin:0 8px;">
+    </div>
+  </div>
+
+  <div class="preset-row">
+    <div class="lbl">Preset</div>
+    <button class="active" data-preset="scale">Scale</button>
+    <button data-preset="birds1">Birds 1</button>
+    <button data-preset="meditation">Meditation</button>
+    <button data-preset="musers">Musers Waltz</button>
+    <button data-preset="bells">Christmas Bells</button>
+    <button data-preset="custom">Custom</button>
+  </div>
+
+  <div class="stages">
+
+    <!-- ── 1. TIMING ──────────── -->
+    <div>
+      <div class="stage-label">1. Timing</div>
+      <div class="block" id="blk-clock">
+        <div class="block-head">Clock</div>
+        <div class="block-body">
+          <div class="xnor-result" id="clock-pulse">0</div>
+          <div class="xnor-detail">tick count</div>
+        </div>
+      </div>
+    </div>
+
+    <!-- ── 2. BINARY SOURCES ──── -->
+    <div>
+      <div class="stage-label">2. Binary sources</div>
+
+      <div class="block" id="blk-counter">
+        <div class="block-head">5-Bit Counter</div>
+        <div class="block-body">
+          <div class="bits" id="counter-bits"></div>
+          <div class="bit-label" id="counter-labels"></div>
+          <div style="margin-top:8px;font-size:10px;color:var(--muted);">count32 = <span id="c32-dec">1</span></div>
+        </div>
+      </div>
+
+      <div class="block" id="blk-div3">
+        <div class="block-head">Div-by-3 Counter</div>
+        <div class="block-body">
+          <div class="bits" id="div3-bits"></div>
+          <div class="bit-label" id="div3-labels"></div>
+          <div style="margin-top:8px;font-size:10px;color:var(--muted);">count6 = <span id="c6-dec">0</span></div>
+        </div>
+      </div>
+
+      <div class="block" id="blk-sr">
+        <div class="block-head">31-Bit Shift Register</div>
+        <div class="block-body">
+          <div class="bits" id="sr-bits"></div>
+          <div style="margin-top:8px;font-size:10px;color:var(--muted);">B1..B31 (B1 = newest)</div>
+        </div>
+      </div>
+    </div>
+
+    <!-- ── 3. SELECTOR MATRIX ─── -->
+    <div>
+      <div class="stage-label">3. Selector Matrix</div>
+
+      <div class="block" id="blk-theme">
+        <div class="block-head">Theme (W X Y Z)</div>
+        <div class="block-body" id="theme-sliders"></div>
+      </div>
+
+      <div class="block" id="blk-interval">
+        <div class="block-head">Interval (A B C D)</div>
+        <div class="block-body" id="interval-sliders"></div>
+      </div>
+    </div>
+
+    <!-- ── 4. LOGIC ───────────── -->
+    <div>
+      <div class="stage-label">4. Logic</div>
+
+      <div class="block" id="blk-xnor">
+        <div class="block-head">XNOR Gate</div>
+        <div class="block-body">
+          <div class="xnor-detail" id="xnor-inputs">1 XOR 0 XOR 0 XOR 0 XOR 0</div>
+          <div class="xnor-result" id="xnor-out">1</div>
+          <div class="xnor-detail">new bit -> B1</div>
+        </div>
+      </div>
+
+      <div class="block" id="blk-pitch">
+        <div class="block-head">Pitch Table</div>
+        <div class="block-body">
+          <div class="bits" id="dcba-bits"></div>
+          <div class="bit-label"><span>A</span><span>B</span><span>C</span><span>D</span></div>
+          <div class="pitch-display" id="pitch-val">0</div>
+          <div class="pitch-detail" id="pitch-note">C (unison)</div>
+        </div>
+      </div>
+    </div>
+
+    <!-- ── 5. OUTPUT ──────────── -->
+    <div>
+      <div class="stage-label">5. Output</div>
+      <div class="block">
+        <div class="block-head">Output</div>
+        <div class="output-box">
+          <div class="output-pitch" id="out-pitch">0</div>
+          <div class="output-note" id="out-label">note + gate</div>
+        </div>
+      </div>
+    </div>
+
+  </div>
+
+  <!-- Melody history -->
+  <div class="melody">
+    <div class="melody-label">Melody History (last 64 steps)</div>
+    <div class="melody-strip" id="melody-strip"></div>
+  </div>
+
+  <!-- Log -->
+  <div class="log">
+    <div class="log-label">Step Log</div>
+    <div class="log-entries" id="log"></div>
+  </div>
+
+</div>
+
+<script>
+// ── Muse Engine (minimal, matching TriadexMuse.sc) ──────────────
+const SOURCE_LABELS = [
+  'OFF','ON','C½','C1','C2','C4','C8','C3','C6',
+  ...[...Array(31)].map((_,i) => 'B'+(i+1))
+];
+const SCALE = [0, 2, 4, 5, 7, 9, 11, 12];
+const NOTE_NAMES = ['C','D','E','F','G','A','B','C+'];
+
+const PRESETS = {
+  scale:      { interval: [3,4,5,0], theme: [0,0,0,0] },
+  birds1:     { interval: [9,10,11,5], theme: [38,39,39,39] },
+  meditation: { interval: [9,39,22,0], theme: [0,0,24,39] },
+  musers:     { interval: [18,16,15,0], theme: [1,5,9,10] },
+  bells:      { interval: [39,38,37,36], theme: [36,37,38,39] },
+  custom:     { interval: [3,4,5,0], theme: [0,0,0,0] },
+};
+
+let state = { c32: 1, c6: 0, sr: 0, step: 0 };
+let sliders = { interval: [3,4,5,0], theme: [0,0,0,0] };
+let prevState = { c32: 1, c6: 0, sr: 0 };
+let melody = [];
+let autoInterval = null;
+
+function sourceAt(pos, c32, c6, sr) {
+  if (pos === 0) return 0;
+  if (pos === 1) return 1;
+  if (pos < 7)  return (c32 >> (pos - 2)) & 1;
+  if (pos < 9)  return (c6 >> (pos - 5)) & 1;
+  if (pos < 40) return (sr >> (pos - 9)) & 1;
+  return 0;
+}
+
+function tick() {
+  prevState = { c32: state.c32, c6: state.c6, sr: state.sr };
+  const logParts = [];
+
+  // 1. Compute XNOR from pre-click state
+  let newBit = 1;
+  const themeBits = [];
+  for (let i = 0; i < 4; i++) {
+    const v = sourceAt(sliders.theme[i], state.c32, state.c6, state.sr);
+    themeBits.push(v);
+    newBit ^= v;
+  }
+  logParts.push(`XNOR: 1⊕${themeBits.join('⊕')} = ${newBit}`);
+
+  // 2. Advance counter
+  state.c32 = (state.c32 + 1) & 0x1F;
+  logParts.push(`c32: ${prevState.c32} → ${state.c32}`);
+
+  // 3. On falling edge: advance div3 and SR
+  let srAdvanced = false;
+  if ((state.c32 & 1) === 0) {
+    state.c6 = state.c6 + 1;
+    if ((state.c6 & 3) === 2) state.c6 = state.c6 + 1;
+    state.sr = ((state.sr << 1) | newBit) & 0x7FFFFFFF;
+    srAdvanced = true;
+    logParts.push(`SR shift ← ${newBit}, c6: ${state.c6}`);
+  } else {
+    logParts.push('(no SR shift this tick)');
+  }
+
+  // 4. Read pitch from post-click state
+  let dcba = 0;
+  for (let i = 0; i < 4; i++) {
+    dcba |= sourceAt(sliders.interval[i], state.c32, state.c6, state.sr) << i;
+  }
+  const pitch = SCALE[dcba & 7] + SCALE[7] * (dcba >> 3);
+  const noteName = NOTE_NAMES[dcba & 7] + (dcba >> 3 ? '+8va' : '');
+  logParts.push(`DCBA=${dcba.toString(2).padStart(4,'0')} → pitch ${pitch} (${noteName})`);
+
+  state.step++;
+  melody.push(pitch);
+  if (melody.length > 64) melody.shift();
+
+  return { newBit, themeBits, dcba, pitch, noteName, srAdvanced, logParts };
+}
+
+// ── UI rendering ────────────────────────────────────────────────
+function renderBits(containerId, value, count, prev) {
+  const el = document.getElementById(containerId);
+  el.innerHTML = '';
+  for (let i = count - 1; i >= 0; i--) {
+    const b = (value >> i) & 1;
+    const pb = prev !== undefined ? (prev >> i) & 1 : b;
+    const div = document.createElement('div');
+    div.className = 'bit' + (b ? ' on' : '') + (b !== pb ? ' changed' : '');
+    div.textContent = b;
+    el.appendChild(div);
+  }
+}
+
+function renderLabels(containerId, labels) {
+  const el = document.getElementById(containerId);
+  el.innerHTML = labels.map(l => `<span>${l}</span>`).join('');
+}
+
+function renderSliders(containerId, positions, names) {
+  const el = document.getElementById(containerId);
+  el.innerHTML = '';
+  for (let i = 0; i < positions.length; i++) {
+    const pos = positions[i];
+    const val = sourceAt(pos, state.c32, state.c6, state.sr);
+    const prevVal = sourceAt(pos, prevState.c32, prevState.c6, prevState.sr);
+    const row = document.createElement('div');
+    row.className = 'slider-row';
+    row.innerHTML = `
+      <span class="slider-name">${names[i]}</span>
+      <span class="slider-val${val !== prevVal ? ' changed' : ''}">${SOURCE_LABELS[pos]} = ${val}</span>
+    `;
+    el.appendChild(row);
+  }
+}
+
+function renderMelody() {
+  const strip = document.getElementById('melody-strip');
+  strip.innerHTML = '';
+  const maxPitch = 24;
+  for (let i = 0; i < melody.length; i++) {
+    const bar = document.createElement('div');
+    bar.className = 'mel-bar' + (i === melody.length - 1 ? ' latest' : '');
+    const h = Math.max(2, (melody[i] / maxPitch) * 76);
+    bar.style.height = h + 'px';
+    strip.appendChild(bar);
+  }
+}
+
+function addLog(parts, stepN) {
+  const log = document.getElementById('log');
+  const entry = document.createElement('div');
+  entry.className = 'entry';
+  entry.innerHTML = `<span class="step-n">${String(stepN).padStart(4,'0')}</span> ${parts.map(p => `<span class="action">${p}</span>`).join(' · ')}`;
+  log.prepend(entry);
+  while (log.children.length > 50) log.removeChild(log.lastChild);
+}
+
+function highlightBlock(id) {
+  document.querySelectorAll('.block').forEach(b => b.classList.remove('highlight'));
+  document.getElementById(id)?.classList.add('highlight');
+}
+
+function renderAll(result) {
+  document.getElementById('step-num').textContent = state.step;
+  document.getElementById('clock-pulse').textContent = state.step;
+
+  renderBits('counter-bits', state.c32, 5, prevState.c32);
+  renderLabels('counter-labels', ['C8','C4','C2','C1','C½']);
+  document.getElementById('c32-dec').textContent = state.c32;
+
+  renderBits('div3-bits', state.c6, 4, prevState.c6);
+  renderLabels('div3-labels', ['b3','b2','C6','C3']);
+  document.getElementById('c6-dec').textContent = state.c6;
+
+  // SR: show first 31 bits, B1 (newest) on the left
+  renderBits('sr-bits', state.sr, 31, prevState.sr);
+
+  renderSliders('theme-sliders', sliders.theme, ['W','X','Y','Z']);
+  renderSliders('interval-sliders', sliders.interval, ['A','B','C','D']);
+
+  if (result) {
+    document.getElementById('xnor-inputs').textContent =
+      `1 ⊕ ${result.themeBits.join(' ⊕ ')}`;
+    const xnorEl = document.getElementById('xnor-out');
+    xnorEl.textContent = result.newBit;
+    xnorEl.className = 'xnor-result' + (result.srAdvanced ? ' changed' : '');
+
+    renderBits('dcba-bits', result.dcba, 4);
+    document.getElementById('pitch-val').textContent = result.pitch;
+    document.getElementById('pitch-note').textContent = result.noteName;
+
+    document.getElementById('out-pitch').textContent = result.pitch;
+    document.getElementById('out-label').textContent = result.noteName;
+
+    addLog(result.logParts, state.step);
+  }
+
+  renderMelody();
+}
+
+function doTick() {
+  const result = tick();
+
+  // Animate: briefly highlight blocks in sequence
+  const blocks = ['blk-clock','blk-counter','blk-div3','blk-sr','blk-theme','blk-xnor','blk-interval','blk-pitch'];
+  blocks.forEach((id, i) => {
+    setTimeout(() => highlightBlock(id), i * 40);
+  });
+  setTimeout(() => highlightBlock(null), blocks.length * 40 + 100);
+
+  renderAll(result);
+}
+
+function reset() {
+  state = { c32: 1, c6: 0, sr: 0, step: 0 };
+  prevState = { c32: 1, c6: 0, sr: 0 };
+  melody = [];
+  document.getElementById('log').innerHTML = '';
+  renderAll(null);
+  document.getElementById('xnor-out').textContent = '—';
+  document.getElementById('xnor-inputs').textContent = '—';
+  document.getElementById('pitch-val').textContent = '—';
+  document.getElementById('pitch-note').textContent = '—';
+  document.getElementById('out-pitch').textContent = '—';
+  document.getElementById('out-label').textContent = 'press tick';
+}
+
+function loadPreset(name) {
+  const p = PRESETS[name];
+  if (!p) return;
+  sliders.interval = [...p.interval];
+  sliders.theme = [...p.theme];
+  reset();
+  document.querySelectorAll('[data-preset]').forEach(b =>
+    b.classList.toggle('active', b.dataset.preset === name));
+}
+
+// ── Controls ────────────────────────────────────────────────────
+document.getElementById('btn-tick').addEventListener('click', doTick);
+
+document.getElementById('btn-auto').addEventListener('click', function() {
+  if (autoInterval) {
+    clearInterval(autoInterval);
+    autoInterval = null;
+    this.classList.remove('active');
+    this.textContent = 'Auto';
+  } else {
+    const bps = +document.getElementById('tempo').value;
+    autoInterval = setInterval(doTick, 1000 / bps);
+    this.classList.add('active');
+    this.textContent = 'Stop';
+  }
+});
+
+document.getElementById('btn-reset').addEventListener('click', () => {
+  if (autoInterval) {
+    clearInterval(autoInterval);
+    autoInterval = null;
+    document.getElementById('btn-auto').classList.remove('active');
+    document.getElementById('btn-auto').textContent = 'Auto';
+  }
+  reset();
+});
+
+document.getElementById('tempo').addEventListener('input', function() {
+  document.getElementById('tempo-v').textContent = this.value;
+  if (autoInterval) {
+    clearInterval(autoInterval);
+    autoInterval = setInterval(doTick, 1000 / +this.value);
+  }
+});
+
+document.querySelectorAll('[data-preset]').forEach(btn => {
+  btn.addEventListener('click', () => loadPreset(btn.dataset.preset));
+});
+
+// ── Init ────────────────────────────────────────────────────────
+reset();
+</script>
+</body>
+</html>

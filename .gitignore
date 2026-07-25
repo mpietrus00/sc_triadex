@@ -1,0 +1,19 @@
+# Audio analysis workspace (copyrighted source recordings, large binaries)
+sounds/
+
+# macOS
+.DS_Store
+
+# Editor / tooling
+.claude/
+
+# Python
+__pycache__/
+*.py[cod]
+
+# Excluded workbook photo (IMG_8939)
+txt/IMG_8939.HEIC
+docs/img/IMG_8939.jpg
+
+# Excluded: screenshot of Tillman's copyrighted JS emulator (till.com)
+docs/img/original-js-interface.png

@@ -1,0 +1,870 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Triadex Muse — marcin pietruszewski</title>
+<meta property="og:title" content="Triadex Muse — marcin pietruszewski">
+<meta property="og:description" content="SuperCollider reimplementation of the Triadex Muse algorithmic music composer by Fredkin and Minsky.">
+<meta property="og:image" content="https://marcinpietruszewski.com/img/triadex/sc-interface-full.png">
+<meta property="og:url" content="https://marcinpietruszewski.com/research-triadex.html">
+<meta property="og:type" content="website">
+<meta name="twitter:card" content="summary_large_image">
+<style>
+  /* ── Self-hosted Riforma Mono ─────────────────────────────── */
+  @font-face {
+    font-family: 'LL Riforma Mono';
+    src: url('fonts/riforma-mono-otf/RiformaMonoLL-Light.otf') format('opentype');
+    font-weight: 300;
+    font-style: normal;
+    font-display: swap;
+  }
+  @font-face {
+    font-family: 'LL Riforma Mono';
+    src: url('fonts/riforma-mono-otf/RiformaMonoLL-LightItalic.otf') format('opentype');
+    font-weight: 300;
+    font-style: italic;
+    font-display: swap;
+  }
+  @font-face {
+    font-family: 'LL Riforma Mono';
+    src: url('fonts/riforma-mono-otf/RiformaMonoLL-Regular.otf') format('opentype');
+    font-weight: 400;
+    font-style: normal;
+    font-display: swap;
+  }
+  @font-face {
+    font-family: 'LL Riforma Mono';
+    src: url('fonts/riforma-mono-otf/RiformaMonoLL-Italic.otf') format('opentype');
+    font-weight: 400;
+    font-style: italic;
+    font-display: swap;
+  }
+  @font-face {
+    font-family: 'LL Riforma Mono';
+    src: url('fonts/riforma-mono-otf/RiformaMonoLL-Bold.otf') format('opentype');
+    font-weight: 700;
+    font-style: normal;
+    font-display: swap;
+  }
+  @font-face {
+    font-family: 'LL Riforma Mono';
+    src: url('fonts/riforma-mono-otf/RiformaMonoLL-BoldItalic.otf') format('opentype');
+    font-weight: 700;
+    font-style: italic;
+    font-display: swap;
+  }
+  @font-face {
+    font-family: 'LL Riforma';
+    src: url('fonts/riforma/RiformaLLWeb-Light.woff2') format('woff2');
+    font-weight: 300;
+    font-style: normal;
+    font-display: swap;
+  }
+  @font-face {
+    font-family: 'LL Riforma';
+    src: url('fonts/riforma/RiformaLLWeb-LightItalic.woff2') format('woff2');
+    font-weight: 300;
+    font-style: italic;
+    font-display: swap;
+  }
+  @font-face {
+    font-family: 'LL Riforma';
+    src: url('fonts/riforma/RiformaLLWeb-Regular.woff2') format('woff2');
+    font-weight: 400;
+    font-style: normal;
+    font-display: swap;
+  }
+  @font-face {
+    font-family: 'LL Riforma';
+    src: url('fonts/riforma/RiformaLLWeb-Italic.woff2') format('woff2');
+    font-weight: 400;
+    font-style: italic;
+    font-display: swap;
+  }
+  @font-face {
+    font-family: 'LL Riforma';
+    src: url('fonts/riforma/RiformaLLWeb-Medium.woff2') format('woff2');
+    font-weight: 500;
+    font-style: normal;
+    font-display: swap;
+  }
+  @font-face {
+    font-family: 'LL Riforma';
+    src: url('fonts/riforma/RiformaLLWeb-MediumItalic.woff2') format('woff2');
+    font-weight: 500;
+    font-style: italic;
+    font-display: swap;
+  }
+  /* ── Shared design tokens ──────────────────────────────────── */
+  :root {
+    --sans: 'LL Riforma', 'Helvetica Neue', Helvetica, Arial, sans-serif;
+    --mono: 'LL Riforma Mono', 'SF Mono', Menlo, Consolas, monospace;
+    --bg: #ffffff;
+    --fg: #0a0a0a;
+    --rule: #0a0a0a;
+    --muted: #6b6b6b;
+    --accent: #1a4dff;
+    --placeholder-bg: #f4f3ee;
+  }
+
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+  html, body { background: var(--bg); color: var(--fg); }
+  body {
+    font-family: var(--sans);
+    font-size: 15px;
+    line-height: 1.45;
+    font-weight: 300;
+    -webkit-font-smoothing: antialiased;
+    text-rendering: optimizeLegibility;
+  }
+  a { color: inherit; text-decoration: none; }
+  a.body-link { border-bottom: 1px solid var(--fg); }
+  a.body-link:hover { background: var(--fg); color: var(--bg); }
+
+  /* ── Page frame ────────────────────────────────────────────── */
+  .frame {
+    max-width: 1400px;
+    margin: 0 auto;
+    padding: 32px 48px 80px;
+  }
+
+  /* ── Nav (shared) ──────────────────────────────────────────── */
+  .nav-grid {
+    display: grid;
+    grid-template-columns: 6.5ch 1fr 9ch 5ch 5ch 5ch;
+    gap: 0 40px;
+    align-items: stretch;
+  }
+  .nav-grid .cell {
+    font-family: var(--mono);
+    font-size: 15px;
+    line-height: 1.35;
+    letter-spacing: -0.02em;
+    font-weight: 400;
+    border-top: 1px solid var(--rule);
+    border-bottom: 1px solid var(--rule);
+    padding: 18px 0 22px;
+    word-break: break-all;
+    overflow-wrap: break-word;
+  }
+  .nav-grid .gap { border: none; padding: 0; }
+  .nav-grid a.cell { display: block; }
+  .nav-grid a.cell span {
+    -webkit-box-decoration-break: clone;
+    box-decoration-break: clone;
+    padding: 1px 2px;
+    transition: background 0.08s ease, color 0.08s ease;
+  }
+  .nav-grid a.cell:hover span { background: var(--fg); color: var(--bg); }
+  .nav-grid a.cell.is-current span { background: var(--fg); color: var(--bg); }
+
+  /* ── Breadcrumb-promoted h1 ────────────────────────────────── */
+  .breadcrumb {
+    font-family: var(--mono);
+    font-size: 13px;
+    color: var(--muted);
+    margin-top: 88px;
+    margin-bottom: 32px;
+    font-weight: 400;
+  }
+  .breadcrumb a { border-bottom: 1px solid transparent; transition: border-color 0.1s; }
+  .breadcrumb a:hover { border-bottom-color: var(--muted); }
+  .breadcrumb .sep { margin: 0 6px; }
+  .breadcrumb .here {
+    color: var(--fg);
+    font-size: 13px;
+    font-weight: 400;
+    display: inline;
+  }
+
+  /* ── Project tagline ───────────────────────────────────────── */
+  .proj-header {
+    padding-bottom: 32px;
+    border-bottom: 1px solid var(--rule);
+  }
+  .proj-tagline {
+    font-size: 21px;
+    font-weight: 300;
+    color: var(--fg);
+    max-width: 64ch;
+    line-height: 1.35;
+  }
+  .proj-tagline em { font-style: italic; }
+
+  /* ── Section blocks (140px label / content) ────────────────── */
+  .proj-section {
+    display: grid;
+    grid-template-columns: 140px 1fr;
+    gap: 32px;
+    margin-bottom: 64px;
+    margin-top: 64px;
+  }
+  .proj-section .label {
+    font-family: var(--mono);
+    font-size: 13px;
+    color: var(--muted);
+    padding-top: 4px;
+  }
+  .proj-section .content {
+    font-size: 15px;
+    line-height: 1.6;
+    max-width: 64ch;
+  }
+  .proj-section .content p + p { margin-top: 1em; }
+  .proj-section .content em,
+  .proj-section .content i { font-style: italic; }
+
+  /* Credits-style key/value list */
+  .kv-list {
+    font-family: var(--mono);
+    font-size: 13px;
+    line-height: 1.8;
+  }
+  .kv-list .row {
+    display: grid;
+    grid-template-columns: 130px 1fr;
+    gap: 24px;
+    padding: 4px 0;
+  }
+  .kv-list .key { color: var(--muted); }
+  .kv-list .val { color: var(--fg); }
+  .kv-list .val a { border-bottom: 1px solid var(--fg); }
+  .kv-list .val a:hover { background: var(--fg); color: var(--bg); }
+
+  /* ── Item list (modeled on _recent) ──────────────────────── */
+  .item-list {
+    list-style: none;
+    border-top: 1px solid var(--rule);
+  }
+  .item-list li {
+    display: grid;
+    grid-template-columns: 110px 110px 1fr 1fr 24px;
+    gap: 24px;
+    padding: 14px 0;
+    border-bottom: 1px solid var(--rule);
+    align-items: stretch;
+    font-size: 14px;
+    line-height: 1.4;
+    position: relative;
+    cursor: pointer;
+  }
+  .item-list .date,
+  .item-list .kind {
+    font-family: var(--mono);
+    font-size: 12px;
+    letter-spacing: 0.02em;
+    color: var(--muted);
+    padding-top: 2px;
+  }
+  .item-list .title { font-weight: 400; color: var(--fg); }
+  .item-list .where {
+    color: var(--muted);
+    padding-top: 1px;
+  }
+  .item-list a.marker {
+    font-family: var(--mono);
+    font-size: 14px;
+    color: var(--muted);
+    text-decoration: none;
+    align-self: stretch;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    margin: -12px 0;
+    transition: background 0.1s ease, color 0.1s ease;
+  }
+  .item-list a.marker::before {
+    content: '';
+    position: absolute;
+    inset: 0;
+  }
+  .item-list li:hover .marker {
+    background: var(--fg);
+    color: var(--bg);
+  }
+
+  /* Hero image */
+  .hero {
+    margin-top: 32px;
+    margin-bottom: 16px;
+  }
+  .hero img {
+    display: block;
+    width: 100%;
+    height: auto;
+    border: 1px solid var(--rule);
+  }
+  .hero-caption {
+    font-family: var(--mono);
+    font-size: 11px;
+    color: var(--muted);
+    margin-top: 10px;
+    letter-spacing: 0.02em;
+  }
+
+  /* Image documentation grid */
+  .image-grid {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 16px;
+  }
+  .image-grid figure { margin: 0; }
+  .image-grid img {
+    width: 100%;
+    display: block;
+    border: 1px solid var(--rule);
+  }
+  .image-grid figcaption {
+    font-family: var(--mono);
+    font-size: 11px;
+    color: var(--muted);
+    margin-top: 6px;
+  }
+
+  /* ── Footer ────────────────────────────────────────────────── */
+  footer {
+    display: grid;
+    grid-template-columns: 100px repeat(3, 1fr);
+    gap: 32px;
+    margin-top: 96px;
+    padding-top: 24px;
+    border-top: 1px solid var(--rule);
+    font-family: var(--mono);
+    font-size: 11px;
+  }
+  footer h4 { color: var(--muted); font-weight: 400; margin-bottom: 10px; }
+  footer p { line-height: 1.6; }
+  footer .colophon { color: var(--muted); }
+  footer a { border-bottom: 1px solid transparent; }
+  footer a:hover { border-bottom-color: var(--fg); }
+
+  /* ── Video embed (clean) ──────────────────────────────────── */
+  .video-wrap {
+    position: relative;
+    padding-top: 56.25%;
+    background: #000;
+    cursor: pointer;
+    overflow: hidden;
+  }
+  .video-wrap img.poster {
+    position: absolute;
+    inset: 0;
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    transition: opacity 0.2s ease;
+  }
+  .video-wrap .play-btn {
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    width: 48px;
+    height: 48px;
+    border: 2px solid #fff;
+    border-radius: 50%;
+    background: rgba(0,0,0,0.4);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    transition: background 0.15s ease, opacity 0.15s ease;
+    opacity: 0;
+    z-index: 2;
+  }
+  .video-wrap .play-btn::after {
+    content: '';
+    display: block;
+    width: 0;
+    height: 0;
+    border-style: solid;
+    border-width: 8px 0 8px 14px;
+    border-color: transparent transparent transparent #fff;
+    margin-left: 3px;
+  }
+  .video-wrap:hover .play-btn {
+    opacity: 1;
+    background: rgba(0,0,0,0.6);
+  }
+  .video-wrap iframe {
+    position: absolute;
+    inset: 0;
+    width: 100%;
+    height: 100%;
+    border: 0;
+  }
+  .video-wrap.is-playing img.poster,
+  .video-wrap.is-playing .play-btn { display: none; }
+
+  /* ── Responsive ────────────────────────────────────────────── */
+  @media (max-width: 900px) {
+    .frame { padding: 24px 28px 60px; }
+
+    .nav-grid { grid-template-columns: 1fr 1fr; gap: 0 24px; }
+    .nav-grid > .cell:first-child { grid-column: 1 / -1; }
+    .nav-grid .gap { display: none; }
+
+    .breadcrumb { margin-top: 64px; }
+    .proj-tagline { font-size: 18px; }
+
+    .proj-section { grid-template-columns: 1fr; gap: 12px; margin-bottom: 48px; margin-top: 48px; }
+    .kv-list .row { grid-template-columns: 110px 1fr; gap: 16px; }
+
+    .item-list li {
+      grid-template-columns: 70px 1fr;
+      gap: 4px 12px;
+    }
+    .item-list .date { grid-column: 1; grid-row: 1; }
+    .item-list .kind { display: none; }
+    .item-list .title { grid-column: 2; grid-row: 1; }
+    .item-list .where { grid-column: 2; grid-row: 2; font-size: 13px; }
+    .item-list a.marker {
+      grid-column: 2; grid-row: 1; justify-self: end;
+      align-self: center; margin: 0; padding: 0 4px;
+    }
+
+    .image-grid { grid-template-columns: 1fr 1fr; }
+
+    footer { grid-template-columns: 1fr; gap: 24px; margin-top: 64px; }
+    footer > div:first-child { display: none; }
+  }
+
+  @media (max-width: 480px) {
+    .frame { padding: 16px 16px 48px; }
+    .nav-grid { grid-template-columns: 1fr; gap: 0; }
+    .nav-grid > .cell { border-top: none; padding: 16px 0 18px; }
+    .nav-grid > .cell:first-of-type { border-top: 1px solid var(--rule); }
+
+    .proj-tagline { font-size: 16px; }
+    .proj-section .content { font-size: 14px; }
+    .image-grid { grid-template-columns: 1fr; }
+    footer { font-size: 10px; }
+  }
+</style>
+</head>
+<body>
+
+<div class="frame">
+
+  <!-- ── NAVIGATION ──────────────────────────────────────────── -->
+  <header class="nav-grid">
+    <a href="index.html" class="cell"><span>_marcin pietruszewski</span></a>
+    <span class="cell gap"></span>
+    <a href="projects.html" class="cell"><span>_projects and collaborations</span></a>
+    <a href="research.html" class="cell is-current"><span>_research</span></a>
+    <a href="publications.html" class="cell"><span>_publications</span></a>
+    <a href="profile.html" class="cell"><span>_profile</span></a>
+  </header>
+
+  <!-- ── BREADCRUMB ──────────────────────────────────────────── -->
+  <nav class="breadcrumb">
+    <a href="research.html">_research</a><span class="sep">/</span><span class="here">Triadex Muse</span>
+  </nav>
+
+  <!-- ── PROJECT TAGLINE ─────────────────────────────────────── -->
+  <header class="proj-header">
+    <p class="proj-tagline">A SuperCollider reimplementation of the Triadex Muse (1969) — the algorithmic music composer designed by Edward Fredkin and Marvin Minsky at MIT. Deterministic melodic sequences from binary logic.</p>
+  </header>
+
+  <!-- ── HERO ────────────────────────────────────────────────── -->
+  <figure class="hero">
+    <img src="img/triadex/sc-interface-full.png" alt="Triadex Muse SuperCollider implementation — main interface and light show">
+    <figcaption class="hero-caption">_Triadex Muse — SuperCollider 3 implementation with light show visualisation</figcaption>
+  </figure>
+
+  <!-- ── ABOUT ───────────────────────────────────────────────── -->
+  <section class="proj-section">
+    <div class="label">_about</div>
+    <div class="content">
+      <p>The Triadex Muse was a digital algorithmic music composer, not a synthesizer in the traditional sense. It generated melodies from deterministic processes using digital logic: a handful of binary counters, a 31-bit linear feedback shift register (LFSR), and an XNOR gate produce patterns that scale, riff, call-and-respond, and develop thematically. All the hallmarks of real musical composition, emerging from simple binary logic. No randomness, no pre-programmed sequences. Only about 280 units were ever built.</p>
+      <p>The original hardware operated at the level of resistor networks and voltage dividers. The INTERVAL section's four binary sources (A, B, C, D) selected voltages that, combined through a resistor ladder, produced one of eight discrete voltage levels fed to a divide-down oscillator. The three least significant bits (A, B, C) addressed eight notes of a major scale; the fourth bit (D) shifted the result up one octave. Pitch was not frequency in any abstract sense — it was a physical ratio determined by component values. The instrument thought in integers: 3-bit addresses into a fixed voltage table.</p>
+      <p>Reimplementing this in SuperCollider means translating from resistors to integers to floats. The 3-bit value (0-7) that once selected a resistor tap now indexes into a scale array — and because the array is programmable, the instrument is no longer bound to the major scale. Any tuning system becomes available: chromatic, microtonal, just intonation, Fokker's 31-TET, arbitrary frequency tables. The octave bit generalises to any interval multiplication. What was a hardware constraint becomes a compositional parameter. The deterministic logic that generates the sequences remains identical; what changes is the mapping from integer to pitch, from address to frequency. <a class="body-link" href="https://till.com/articles/muse/" target="_blank" rel="noopener noreferrer">J. Donald Tillman's JavaScript emulation</a> was a key reference for understanding these internal mappings.</p>
+      <p>This project is a faithful reimplementation in SuperCollider, preserving the original architecture while extending it with programmable scales, multi-voice capability, pattern integration, and a light show visualisation derived from the shift register state. The implementation follows a media-archaeological approach: reconstructing the instrument's logic from patent documentation (US 3,610,801) and the original programming manual. The core engine is decoupled from audio output, allowing the deterministic note sequences to drive any synthesis method, MIDI output, or SC pattern infrastructure.</p>
+    </div>
+  </section>
+
+  <!-- ── ARCHITECTURE DIAGRAM ─────────────────────────────────── -->
+  <section class="proj-section">
+    <div class="label">_architecture</div>
+    <div class="content" style="max-width: none;">
+      <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 960 560" style="width: 80%; height: auto; font-family: 'LL Riforma Mono', 'IBM Plex Mono', 'SF Mono', Menlo, monospace;">
+        <defs>
+          <marker id="arrow" markerWidth="6" markerHeight="4" refX="6" refY="2" orient="auto">
+            <path d="M0,0 L6,2 L0,4" fill="none" stroke="#0a0a0a" stroke-width="1"/>
+          </marker>
+          <marker id="arrow-muted" markerWidth="6" markerHeight="4" refX="6" refY="2" orient="auto">
+            <path d="M0,0 L6,2 L0,4" fill="none" stroke="#2563eb" stroke-width="1"/>
+          </marker>
+        </defs>
+
+        <!-- ── STAGE LABELS (top) ─────────────────── -->
+        <text x="70" y="20" text-anchor="middle" font-size="9" fill="#2563eb">1. TIMING</text>
+        <text x="237" y="20" text-anchor="middle" font-size="9" fill="#2563eb">2. BINARY SOURCES</text>
+        <text x="470" y="20" text-anchor="middle" font-size="9" fill="#2563eb">3. PERMUTATION</text>
+        <text x="690" y="20" text-anchor="middle" font-size="9" fill="#2563eb">4. LOGIC</text>
+        <text x="875" y="20" text-anchor="middle" font-size="9" fill="#2563eb">5. OUTPUT</text>
+        <line x1="10" y1="28" x2="950" y2="28" stroke="#2563eb" stroke-width="0.5" stroke-dasharray="2,4"/>
+
+        <!-- ── CLOCK ──────────────────────────────── -->
+        <rect x="30" y="160" width="80" height="40" fill="none" stroke="#0a0a0a" stroke-width="1"/>
+        <text x="70" y="184" text-anchor="middle" font-size="11" fill="#0a0a0a">CLOCK</text>
+        <text x="70" y="214" text-anchor="middle" font-size="8" fill="#2563eb">master tempo</text>
+        <text x="70" y="224" text-anchor="middle" font-size="8" fill="#2563eb">oscillator</text>
+
+        <!-- Clock → 4-bit counter (orthogonal: right then up) -->
+        <path d="M110,170 L140,170 L140,110 L172,110" fill="none" stroke="#0a0a0a" stroke-width="1" marker-end="url(#arrow)"/>
+        <!-- Clock → ÷3 counter (orthogonal: right then down) -->
+        <path d="M110,190 L140,190 L140,270 L172,270" fill="none" stroke="#0a0a0a" stroke-width="1" marker-end="url(#arrow)"/>
+        <!-- Clock → LFSR (straight right) -->
+        <line x1="110" y1="180" x2="172" y2="180" stroke="#0a0a0a" stroke-width="1" marker-end="url(#arrow)"/>
+
+        <!-- ── 4-BIT COUNTER ──────────────────────── -->
+        <rect x="174" y="80" width="126" height="64" fill="none" stroke="#0a0a0a" stroke-width="1"/>
+        <text x="237" y="104" text-anchor="middle" font-size="11" fill="#0a0a0a">4-BIT COUNTER</text>
+        <text x="237" y="118" text-anchor="middle" font-size="9" fill="#2563eb">5 bits: 0,1,2,3 + ÷2</text>
+        <text x="237" y="132" text-anchor="middle" font-size="9" fill="#2563eb">cycles 0–15, repeats</text>
+
+        <!-- ── 31-BIT LFSR ────────────────────────── -->
+        <rect x="174" y="160" width="126" height="56" fill="none" stroke="#0a0a0a" stroke-width="1"/>
+        <text x="237" y="182" text-anchor="middle" font-size="11" fill="#0a0a0a">31-BIT LFSR</text>
+        <text x="237" y="196" text-anchor="middle" font-size="9" fill="#2563eb">shift register</text>
+        <text x="237" y="208" text-anchor="middle" font-size="9" fill="#2563eb">taps: 8, 17, 20, 27</text>
+
+        <!-- ── ÷3 COUNTER ────────────────────────── -->
+        <rect x="174" y="248" width="126" height="44" fill="none" stroke="#0a0a0a" stroke-width="1"/>
+        <text x="237" y="268" text-anchor="middle" font-size="11" fill="#0a0a0a">÷3 COUNTER</text>
+        <text x="237" y="282" text-anchor="middle" font-size="9" fill="#2563eb">cycles 0–2, repeats</text>
+
+        <!-- Annotation: what binary sources provide -->
+        <text x="237" y="310" text-anchor="middle" font-size="8" fill="#2563eb">together these produce</text>
+        <text x="237" y="320" text-anchor="middle" font-size="8" fill="#2563eb">40 binary signals that</text>
+        <text x="237" y="330" text-anchor="middle" font-size="8" fill="#2563eb">change at different rates</text>
+
+        <!-- ── SELECTOR MATRIX ────────────────────── -->
+        <rect x="380" y="46" width="180" height="420" fill="none" stroke="#0a0a0a" stroke-width="1"/>
+        <text x="470" y="68" text-anchor="middle" font-size="11" fill="#0a0a0a">SELECTOR MATRIX</text>
+        <text x="470" y="84" text-anchor="middle" font-size="9" fill="#2563eb">8 sliders choose which</text>
+        <text x="470" y="94" text-anchor="middle" font-size="9" fill="#2563eb">binary source drives each bit</text>
+        <line x1="380" y1="102" x2="560" y2="102" stroke="#0a0a0a" stroke-width="0.5"/>
+
+        <!-- THEME group -->
+        <text x="394" y="122" font-size="9" fill="#2563eb">THEME — controls note on/off</text>
+        <rect x="394" y="132" width="152" height="24" fill="none" stroke="#0a0a0a" stroke-width="0.5"/>
+        <text x="470" y="148" text-anchor="middle" font-size="9" fill="#0a0a0a">slider 1 → bit E</text>
+        <rect x="394" y="158" width="152" height="24" fill="none" stroke="#0a0a0a" stroke-width="0.5"/>
+        <text x="470" y="174" text-anchor="middle" font-size="9" fill="#0a0a0a">slider 2 → bit F</text>
+        <rect x="394" y="184" width="152" height="24" fill="none" stroke="#0a0a0a" stroke-width="0.5"/>
+        <text x="470" y="200" text-anchor="middle" font-size="9" fill="#0a0a0a">slider 3 → bit G</text>
+        <rect x="394" y="210" width="152" height="24" fill="none" stroke="#0a0a0a" stroke-width="0.5"/>
+        <text x="470" y="226" text-anchor="middle" font-size="9" fill="#0a0a0a">slider 4 → bit H</text>
+
+        <!-- INTERVAL group -->
+        <line x1="380" y1="250" x2="560" y2="250" stroke="#0a0a0a" stroke-width="0.5"/>
+        <text x="394" y="268" font-size="9" fill="#2563eb">INTERVAL — controls pitch</text>
+        <rect x="394" y="278" width="152" height="24" fill="none" stroke="#0a0a0a" stroke-width="0.5"/>
+        <text x="470" y="294" text-anchor="middle" font-size="9" fill="#0a0a0a">slider 5 → bit A</text>
+        <rect x="394" y="304" width="152" height="24" fill="none" stroke="#0a0a0a" stroke-width="0.5"/>
+        <text x="470" y="320" text-anchor="middle" font-size="9" fill="#0a0a0a">slider 6 → bit B</text>
+        <rect x="394" y="330" width="152" height="24" fill="none" stroke="#0a0a0a" stroke-width="0.5"/>
+        <text x="470" y="346" text-anchor="middle" font-size="9" fill="#0a0a0a">slider 7 → bit C</text>
+        <rect x="394" y="356" width="152" height="24" fill="none" stroke="#0a0a0a" stroke-width="0.5"/>
+        <text x="470" y="372" text-anchor="middle" font-size="9" fill="#0a0a0a">slider 8 → bit D (octave)</text>
+
+        <!-- Matrix annotation -->
+        <text x="470" y="406" text-anchor="middle" font-size="8" fill="#2563eb">each slider picks 1 of 40</text>
+        <text x="470" y="416" text-anchor="middle" font-size="8" fill="#2563eb">binary sources from the</text>
+        <text x="470" y="426" text-anchor="middle" font-size="8" fill="#2563eb">counters and shift register</text>
+        <text x="470" y="448" text-anchor="middle" font-size="8" fill="#2563eb">slider position = the only</text>
+        <text x="470" y="458" text-anchor="middle" font-size="8" fill="#2563eb">user control on the instrument</text>
+
+        <!-- Sources → Matrix (orthogonal) -->
+        <path d="M300,110 L340,110 L340,170 L378,170" fill="none" stroke="#0a0a0a" stroke-width="1" marker-end="url(#arrow)"/>
+        <path d="M300,188 L350,188 L350,290 L378,290" fill="none" stroke="#0a0a0a" stroke-width="1" marker-end="url(#arrow)"/>
+        <path d="M300,270 L340,270 L340,360 L378,360" fill="none" stroke="#0a0a0a" stroke-width="1" marker-end="url(#arrow)"/>
+
+        <!-- ── XNOR GATE ─────────────────────────── -->
+        <rect x="630" y="150" width="120" height="56" fill="none" stroke="#0a0a0a" stroke-width="1"/>
+        <text x="690" y="174" text-anchor="middle" font-size="11" fill="#0a0a0a">XNOR GATE</text>
+        <text x="690" y="190" text-anchor="middle" font-size="9" fill="#2563eb">E ⊙ F ⊙ G ⊙ H</text>
+        <text x="690" y="224" text-anchor="middle" font-size="8" fill="#2563eb">if all 4 bits agree:</text>
+        <text x="690" y="234" text-anchor="middle" font-size="8" fill="#2563eb">note ON, else note OFF</text>
+
+        <!-- Matrix → XNOR (orthogonal) -->
+        <path d="M560,178 L594,178 L594,178 L628,178" fill="none" stroke="#0a0a0a" stroke-width="1" marker-end="url(#arrow)"/>
+        <text x="594" y="170" text-anchor="middle" font-size="8" fill="#2563eb">E,F,G,H</text>
+
+        <!-- ── PITCH TABLE ────────────────────────── -->
+        <rect x="630" y="290" width="120" height="64" fill="none" stroke="#0a0a0a" stroke-width="1"/>
+        <text x="690" y="314" text-anchor="middle" font-size="11" fill="#0a0a0a">PITCH TABLE</text>
+        <text x="690" y="330" text-anchor="middle" font-size="9" fill="#2563eb">3-bit index → note</text>
+        <text x="690" y="344" text-anchor="middle" font-size="9" fill="#2563eb">8 resistor taps</text>
+        <text x="690" y="372" text-anchor="middle" font-size="8" fill="#2563eb">original: C major scale</text>
+        <text x="690" y="382" text-anchor="middle" font-size="8" fill="#2563eb">SC: any scale / tuning</text>
+
+        <!-- Matrix → Pitch table (orthogonal) -->
+        <path d="M560,320 L594,320 L594,320 L628,320" fill="none" stroke="#0a0a0a" stroke-width="1" marker-end="url(#arrow)"/>
+        <text x="594" y="312" text-anchor="middle" font-size="8" fill="#2563eb">A,B,C</text>
+
+        <!-- ── OCTAVE ─────────────────────────────── -->
+        <rect x="630" y="400" width="120" height="36" fill="none" stroke="#0a0a0a" stroke-width="1"/>
+        <text x="690" y="422" text-anchor="middle" font-size="10" fill="#0a0a0a">D → OCTAVE ×2</text>
+
+        <!-- Matrix → Octave (orthogonal) -->
+        <path d="M560,370 L594,370 L594,418 L628,418" fill="none" stroke="#0a0a0a" stroke-width="1" marker-end="url(#arrow)"/>
+        <text x="594" y="398" text-anchor="middle" font-size="8" fill="#2563eb">D</text>
+
+        <!-- ── OUTPUT ─────────────────────────────── -->
+        <rect x="820" y="270" width="120" height="64" fill="#0a0a0a" stroke="#0a0a0a" stroke-width="1"/>
+        <text x="880" y="296" text-anchor="middle" font-size="11" fill="#ffffff">OUTPUT</text>
+        <text x="880" y="314" text-anchor="middle" font-size="9" fill="#ffffff">note + gate</text>
+
+        <!-- XNOR → Output (orthogonal: right, then down) -->
+        <path d="M750,178 L784,178 L784,285 L818,285" fill="none" stroke="#0a0a0a" stroke-width="1" marker-end="url(#arrow)"/>
+        <text x="784" y="230" text-anchor="end" font-size="8" fill="#2563eb" dx="-4">gate</text>
+
+        <!-- Pitch → Output (orthogonal: right, then up) -->
+        <path d="M750,322 L794,322 L794,302 L818,302" fill="none" stroke="#0a0a0a" stroke-width="1" marker-end="url(#arrow)"/>
+        <text x="794" y="338" text-anchor="end" font-size="8" fill="#2563eb" dx="-4">pitch</text>
+
+        <!-- Octave → Output (orthogonal: right, then up) -->
+        <path d="M750,418 L804,418 L804,318 L818,318" fill="none" stroke="#0a0a0a" stroke-width="1" marker-end="url(#arrow)"/>
+        <text x="804" y="380" text-anchor="end" font-size="8" fill="#2563eb" dx="-4">×2</text>
+
+        <!-- ── LFSR FEEDBACK (dashed, orthogonal across top) ── -->
+        <path d="M690,150 L690,42 L237,42 L237,78" fill="none" stroke="#2563eb" stroke-width="1" stroke-dasharray="4,3" marker-end="url(#arrow-muted)"/>
+        <text x="460" y="37" text-anchor="middle" font-size="8" fill="#2563eb">XNOR result feeds back into shift register — creates long pseudo-random sequences</text>
+
+        <!-- ── BOTTOM ANNOTATION ──────────────────── -->
+        <line x1="10" y1="490" x2="950" y2="490" stroke="#2563eb" stroke-width="0.5" stroke-dasharray="2,4"/>
+        <text x="20" y="510" font-size="9" fill="#2563eb">No randomness. No stored sequences. All structure emerges from deterministic binary logic.</text>
+        <text x="20" y="524" font-size="9" fill="#2563eb">The 8 slider positions are the only input. Everything else is fixed architecture.</text>
+        <text x="20" y="546" font-size="8" fill="#2563eb">After Fredkin &amp; Minsky, US Patent 3,610,801 (1971)</text>
+      </svg>
+      <p style="font-family: var(--mono); font-size: 11px; color: var(--muted); margin-top: 10px;">FIG. 1 — Marcin Pietruszewski, annotations and circuit after Fredkin &amp; Minsky, US Patent 3,610,801 (1971)</p>
+
+      <!-- Patent drawings from US 3,610,801 -->
+      <div style="display: grid; grid-template-columns: repeat(3, 1fr); gap: 12px; margin-top: 32px; max-width: 60%;">
+        <figure style="margin: 0;">
+          <img src="img/triadex/US3610801-drawings-page-2.png" alt="US Patent 3,610,801 — FIG. 1: system block diagram" style="width: 100%; display: block;">
+          <figcaption style="font-family: var(--mono); font-size: 11px; color: var(--muted); margin-top: 6px;">FIG. 1 — system block diagram</figcaption>
+        </figure>
+        <figure style="margin: 0;">
+          <img src="img/triadex/US3610801-drawings-page-3.png" alt="US Patent 3,610,801 — FIGS. 2–5: grace, tempo, octave selectors" style="width: 100%; display: block;">
+          <figcaption style="font-family: var(--mono); font-size: 11px; color: var(--muted); margin-top: 6px;">FIGS. 2–5 — grace, tempo, octave</figcaption>
+        </figure>
+        <figure style="margin: 0;">
+          <img src="img/triadex/US3610801-drawings-page-4.png" alt="US Patent 3,610,801 — FIG. 6: alternative embodiment" style="width: 100%; display: block;">
+          <figcaption style="font-family: var(--mono); font-size: 11px; color: var(--muted); margin-top: 6px;">FIG. 6 — alternative embodiment</figcaption>
+        </figure>
+      </div>
+      <p style="font-family: var(--mono); font-size: 11px; color: var(--muted); margin-top: 12px;">Source: Edward Fredkin &amp; Marvin L. Minsky, <a class="body-link" href="https://www.google.com/patents/US3610801" target="_blank" rel="noopener noreferrer">US Patent 3,610,801</a> (1971)</p>
+    </div>
+  </section>
+
+  <!-- ── SOFTWARE ────────────────────────────────────────────── -->
+  <section class="proj-section">
+    <div class="label">_software</div>
+    <div class="content" style="max-width: none;">
+      <div class="kv-list">
+        <div class="row"><span class="key">language</span><span class="val">SuperCollider 3</span></div>
+        <div class="row"><span class="key">architecture</span><span class="val">4-bit counter, divide-by-3 counter, 31-bit LFSR, XNOR gate</span></div>
+        <div class="row"><span class="key">original</span><span class="val">Edward Fredkin &amp; Marvin Minsky, MIT (1969/1972)</span></div>
+        <div class="row"><span class="key">patent</span><span class="val"><a href="https://www.google.com/patents/US3610801" target="_blank" rel="noopener noreferrer">US 3,610,801</a></span></div>
+        <div class="row"><span class="key">status</span><span class="val">In development</span></div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ── VIDEO ───────────────────────────────────────────────── -->
+  <section class="proj-section">
+    <div class="label">_video</div>
+    <div class="content" style="max-width: none;">
+      <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 16px;">
+        <figure style="margin: 0;">
+          <div class="video-wrap" data-id="haGhAuqPCSU">
+            <img class="poster" src="https://img.youtube.com/vi/haGhAuqPCSU/maxresdefault.jpg" alt="Triadex Muse — SuperCollider reimplementation">
+            <div class="play-btn"></div>
+          </div>
+          <figcaption style="font-family: var(--mono); font-size: 11px; color: var(--muted); margin-top: 6px;">Triadex Muse — SuperCollider reimplementation with light show</figcaption>
+        </figure>
+        <figure style="margin: 0;">
+          <div class="video-wrap" data-id="wkb99iAkOyw">
+            <img class="poster" src="https://img.youtube.com/vi/wkb99iAkOyw/maxresdefault.jpg" alt="Triadex Muse — original hardware">
+            <div class="play-btn"></div>
+          </div>
+          <figcaption style="font-family: var(--mono); font-size: 11px; color: var(--muted); margin-top: 6px;">Triadex Muse — original hardware demonstration</figcaption>
+        </figure>
+      </div>
+    </div>
+  </section>
+  <script>
+  document.querySelectorAll('.video-wrap[data-id]').forEach(function(wrap) {
+    wrap.addEventListener('click', function() {
+      var iframe = document.createElement('iframe');
+      iframe.src = 'https://www.youtube-nocookie.com/embed/' + wrap.dataset.id + '?autoplay=1&rel=0&showinfo=0&iv_load_policy=3&modestbranding=1&color=white';
+      iframe.allow = 'accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture';
+      iframe.allowFullscreen = true;
+      wrap.appendChild(iframe);
+      wrap.classList.add('is-playing');
+    });
+  });
+  </script>
+
+  <!-- ── DOCUMENTATION ───────────────────────────────────────── -->
+  <section class="proj-section">
+    <div class="label">_documentation</div>
+    <div class="content" style="max-width: none;">
+      <div class="image-grid">
+        <figure>
+          <img src="img/triadex/lightshow-01.png" alt="Muse Light Show — blue radial pattern">
+          <figcaption>_01 — light show: shift register state visualisation</figcaption>
+        </figure>
+        <figure>
+          <img src="img/triadex/lightshow-03.png" alt="Muse Light Show — purple pattern">
+          <figcaption>_03 — light show: theme state</figcaption>
+        </figure>
+        <figure>
+          <img src="img/triadex/lightshow-04.png" alt="Muse Light Show — mixed pattern">
+          <figcaption>_04 — light show: combined state</figcaption>
+        </figure>
+        <figure>
+          <img src="img/triadex/lightshow-05.png" alt="Muse Light Show — warm pattern">
+          <figcaption>_05 — light show: evolving pattern</figcaption>
+        </figure>
+        <figure>
+          <img src="img/triadex/original-js-interface.png" alt="Triadex Muse — J. Donald Tillman's JavaScript emulation interface">
+          <figcaption>_06 — reference: Tillman's JavaScript emulation</figcaption>
+        </figure>
+      </div>
+    </div>
+  </section>
+
+  <!-- ── REFERENCES ──────────────────────────────────────────── -->
+  <section class="proj-section">
+    <div class="label">_references</div>
+    <div class="content" style="max-width: none;">
+      <ul class="item-list">
+        <li>
+          <span class="date">2024</span>
+          <span class="kind">_article</span>
+          <span class="title">J. Donald Tillman — Triadex Muse JavaScript emulation &amp; analysis</span>
+          <span class="where">till.com</span>
+          <a class="marker" href="https://till.com/articles/muse/" target="_blank" rel="noopener noreferrer" aria-label="Open external link">↗︎</a>
+        </li>
+        <li>
+          <span class="date">1972</span>
+          <span class="kind">_patent</span>
+          <span class="title">US Patent 3,610,801 — Fredkin &amp; Minsky</span>
+          <span class="where">United States Patent Office</span>
+          <a class="marker" href="https://www.google.com/patents/US3610801" target="_blank" rel="noopener noreferrer" aria-label="Open external link">↗︎</a>
+        </li>
+        <li>
+          <span class="date">2020</span>
+          <span class="kind">_article</span>
+          <span class="title">Generative Music with the Muse</span>
+          <span class="where">Computer History Museum</span>
+          <a class="marker" href="https://computerhistory.org/blog/generative-music-with-the-muse/" target="_blank" rel="noopener noreferrer" aria-label="Open external link">↗︎</a>
+        </li>
+        <li>
+          <span class="date"></span>
+          <span class="kind">_wiki</span>
+          <span class="title">Triadex Muse</span>
+          <span class="where">Wikipedia</span>
+          <a class="marker" href="https://en.wikipedia.org/wiki/Triadex_Muse" target="_blank" rel="noopener noreferrer" aria-label="Open external link">↗︎</a>
+        </li>
+      </ul>
+    </div>
+  </section>
+
+  <!-- ── ACKNOWLEDGEMENTS ────────────────────────────────────── -->
+  <section class="proj-section">
+    <div class="label">_acknowledgements</div>
+    <div class="content">
+      <p>Edward Fredkin and Marvin Minsky for the original Triadex Muse design. J. Donald Tillman for his detailed JavaScript emulation and analysis, which served as a primary reference for this reimplementation. Christopher Haworth and Ezra J Teboul for conversations on the original Triadex.</p>
+    </div>
+  </section>
+
+  <!-- ── FOOTER ──────────────────────────────────────────────── -->
+  <footer>
+    <div></div>
+    <div>
+      <h4>_contact</h4>
+      <p><a href="mailto:studio@marcinpietruszewski.com">studio<br>@marcinpietruszewski.com</a></p>
+    </div>
+    <div>
+      <h4>_elsewhere</h4>
+      <p><a href="https://github.com/mpietrus00" target="_blank" rel="noopener noreferrer">github</a><br><a href="https://www.instagram.com/marcinpiet/" target="_blank" rel="noopener noreferrer">instagram</a></p>
+    </div>
+    <div class="colophon">
+      <h4>_colophon</h4>
+      <p>Set in LL Riforma &amp; LL Riforma Mono by <a href="https://norm.to" target="_blank" rel="noopener noreferrer">NORM</a>.<br>Design by Split Level Design Studio.<br>Hosted on Cloudflare.<br>© 2026</p>
+    </div>
+  </footer>
+
+</div>
+
+<script>
+(function() {
+  var PI = '3141592653589793238462643383279502884197169399375105820974944592307816406286208998628034825342117067982148086513282306647093844609550582231725359408128481117450284102701938521105559644622948954930381964428810975665933446128475648233786783165271201909145648566923460348610454326648213393607260249141273724587006606315588174881520920962829254091715364367892590360011330530548820466521384146951941511609433057270365759591953092186117381932611793105118548074462379962749567351885752724891227938183011949129833673362440656643086021394946395224737190702179860943702770539217176293176752384674818467669405132000568127145263560827785771342757789609173637178721468440901224953430146549585371050792279689258923542019956112129021960864034418159813629774771309960518707211349999998372978049951059731732816096318595024459455346908302642522308253344685035261931188171010003137838752886587533208381420617177669147303598253490428755468731159562863882353787593751957781857780532171226806613001927876611195909216420198';
+  var CHARS = 'abcdefghijklmnopqrstuvwxyz_';
+  var STEPS = 30;
+  var TICK = 50;
+  var linkIndex = 0;
+
+  document.querySelectorAll('.nav-grid a.cell').forEach(function(link) {
+    var span = link.querySelector('span');
+    if (!span) return;
+    var original = span.textContent;
+    var timer = null;
+    var piOffset = linkIndex * 50;
+    linkIndex++;
+
+    link.addEventListener('mouseenter', function() {
+      if (timer) clearInterval(timer);
+      var step = 0;
+      // Each character gets a resolve threshold based on its pi digit (0-9)
+      // Digit 0 resolves earliest, digit 9 resolves latest
+      var thresholds = [];
+      var charIdx = 0;
+      for (var i = 0; i < original.length; i++) {
+        if (original[i] === ' ' || original[i] === '\u2009') {
+          thresholds.push(0);
+        } else {
+          var d = parseInt(PI[(piOffset + charIdx) % PI.length]);
+          // Map digit 0-9 to threshold 0.1-0.95
+          thresholds.push(0.1 + d * 0.085);
+          charIdx++;
+        }
+      }
+      timer = setInterval(function() {
+        step++;
+        if (step >= STEPS) {
+          span.textContent = original;
+          clearInterval(timer);
+          timer = null;
+          return;
+        }
+        var t = step / STEPS;
+        var s = '';
+        for (var i = 0; i < original.length; i++) {
+          if (original[i] === ' ' || original[i] === '\u2009') {
+            s += original[i];
+          } else if (t >= thresholds[i]) {
+            s += original[i];
+          } else {
+            s += CHARS[Math.floor(Math.random() * CHARS.length)];
+          }
+        }
+        span.textContent = s;
+      }, TICK);
+    });
+
+    link.addEventListener('mouseleave', function() {
+      if (timer) { clearInterval(timer); timer = null; }
+      span.textContent = original;
+    });
+  });
+})();
+</script>
+</body>
+</html>

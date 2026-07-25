@@ -1,0 +1,1229 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Triadex Muse — Presentation — marcin pietruszewski</title>
+<style>
+  /* ── Self-hosted Riforma Mono ─────────────────────────────── */
+  @font-face {
+    font-family: 'LL Riforma Mono';
+    src: url('fonts/riforma-mono-otf/RiformaMonoLL-Light.otf') format('opentype');
+    font-weight: 300;
+    font-style: normal;
+    font-display: swap;
+  }
+  @font-face {
+    font-family: 'LL Riforma Mono';
+    src: url('fonts/riforma-mono-otf/RiformaMonoLL-LightItalic.otf') format('opentype');
+    font-weight: 300;
+    font-style: italic;
+    font-display: swap;
+  }
+  @font-face {
+    font-family: 'LL Riforma Mono';
+    src: url('fonts/riforma-mono-otf/RiformaMonoLL-Regular.otf') format('opentype');
+    font-weight: 400;
+    font-style: normal;
+    font-display: swap;
+  }
+  @font-face {
+    font-family: 'LL Riforma Mono';
+    src: url('fonts/riforma-mono-otf/RiformaMonoLL-Italic.otf') format('opentype');
+    font-weight: 400;
+    font-style: italic;
+    font-display: swap;
+  }
+  @font-face {
+    font-family: 'LL Riforma Mono';
+    src: url('fonts/riforma-mono-otf/RiformaMonoLL-Bold.otf') format('opentype');
+    font-weight: 700;
+    font-style: normal;
+    font-display: swap;
+  }
+  @font-face {
+    font-family: 'LL Riforma Mono';
+    src: url('fonts/riforma-mono-otf/RiformaMonoLL-BoldItalic.otf') format('opentype');
+    font-weight: 700;
+    font-style: italic;
+    font-display: swap;
+  }
+  @font-face {
+    font-family: 'LL Riforma';
+    src: url('fonts/riforma/RiformaLLWeb-Light.woff2') format('woff2');
+    font-weight: 300;
+    font-style: normal;
+    font-display: swap;
+  }
+  @font-face {
+    font-family: 'LL Riforma';
+    src: url('fonts/riforma/RiformaLLWeb-LightItalic.woff2') format('woff2');
+    font-weight: 300;
+    font-style: italic;
+    font-display: swap;
+  }
+  @font-face {
+    font-family: 'LL Riforma';
+    src: url('fonts/riforma/RiformaLLWeb-Regular.woff2') format('woff2');
+    font-weight: 400;
+    font-style: normal;
+    font-display: swap;
+  }
+  @font-face {
+    font-family: 'LL Riforma';
+    src: url('fonts/riforma/RiformaLLWeb-Italic.woff2') format('woff2');
+    font-weight: 400;
+    font-style: italic;
+    font-display: swap;
+  }
+  @font-face {
+    font-family: 'LL Riforma';
+    src: url('fonts/riforma/RiformaLLWeb-Medium.woff2') format('woff2');
+    font-weight: 500;
+    font-style: normal;
+    font-display: swap;
+  }
+  @font-face {
+    font-family: 'LL Riforma';
+    src: url('fonts/riforma/RiformaLLWeb-MediumItalic.woff2') format('woff2');
+    font-weight: 500;
+    font-style: italic;
+    font-display: swap;
+  }
+
+  /* ── Shared design tokens ──────────────────────────────────── */
+  :root {
+    --sans: 'LL Riforma', 'Helvetica Neue', Helvetica, Arial, sans-serif;
+    --mono: 'LL Riforma Mono', 'SF Mono', Menlo, Consolas, monospace;
+    --bg: #ffffff;
+    --fg: #0a0a0a;
+    --rule: #0a0a0a;
+    --muted: #6b6b6b;
+    --accent: #1a4dff;
+    --placeholder-bg: #f4f3ee;
+  }
+
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+  html, body { background: var(--bg); color: var(--fg); }
+  body {
+    font-family: var(--sans);
+    font-size: 15px;
+    line-height: 1.45;
+    font-weight: 300;
+    -webkit-font-smoothing: antialiased;
+    text-rendering: optimizeLegibility;
+  }
+  a { color: inherit; text-decoration: none; }
+  a.body-link { border-bottom: 1px solid var(--fg); }
+  a.body-link:hover { background: var(--fg); color: var(--bg); }
+
+  /* ── Page frame ────────────────────────────────────────────── */
+  .frame {
+    max-width: 1400px;
+    margin: 0 auto;
+    padding: 32px 48px 80px;
+  }
+
+  /* ── Nav ────────────────────────────────────────────────────── */
+  .nav-grid {
+    display: grid;
+    grid-template-columns: 6.5ch 1fr 9ch 5ch 5ch 5ch;
+    gap: 0 40px;
+    align-items: stretch;
+  }
+  .nav-grid .cell {
+    font-family: var(--mono);
+    font-size: 15px;
+    line-height: 1.35;
+    letter-spacing: -0.02em;
+    font-weight: 400;
+    border-top: 1px solid var(--rule);
+    border-bottom: 1px solid var(--rule);
+    padding: 18px 0 22px;
+    word-break: break-all;
+    overflow-wrap: break-word;
+  }
+  .nav-grid .gap { border: none; padding: 0; }
+  .nav-grid a.cell { display: block; }
+  .nav-grid a.cell span {
+    -webkit-box-decoration-break: clone;
+    box-decoration-break: clone;
+    padding: 1px 2px;
+    transition: background 0.08s ease, color 0.08s ease;
+  }
+  .nav-grid a.cell:hover span { background: var(--fg); color: var(--bg); }
+  .nav-grid a.cell.is-current span { background: var(--fg); color: var(--bg); }
+
+  /* ── Breadcrumb ────────────────────────────────────────────── */
+  .breadcrumb {
+    font-family: var(--mono);
+    font-size: 13px;
+    color: var(--muted);
+    margin-top: 88px;
+    margin-bottom: 32px;
+    font-weight: 400;
+  }
+  .breadcrumb a { border-bottom: 1px solid transparent; transition: border-color 0.1s; }
+  .breadcrumb a:hover { border-bottom-color: var(--muted); }
+  .breadcrumb .sep { margin: 0 6px; }
+  .breadcrumb .here { color: var(--fg); font-size: 13px; font-weight: 400; display: inline; }
+
+  /* ── Project tagline ───────────────────────────────────────── */
+  .proj-header { padding-bottom: 32px; border-bottom: 1px solid var(--rule); }
+  .proj-tagline {
+    font-size: 21px;
+    font-weight: 300;
+    color: var(--fg);
+    max-width: 64ch;
+    line-height: 1.35;
+  }
+  .proj-tagline em { font-style: italic; }
+
+  /* ── Section blocks (140px label / content) ────────────────── */
+  .proj-section {
+    display: grid;
+    grid-template-columns: 140px 1fr;
+    gap: 32px;
+    margin-bottom: 64px;
+    margin-top: 64px;
+  }
+  .proj-section .label {
+    font-family: var(--mono);
+    font-size: 13px;
+    color: var(--muted);
+    padding-top: 4px;
+  }
+  .proj-section .content {
+    font-size: 15px;
+    line-height: 1.6;
+    max-width: 64ch;
+  }
+  .proj-section .content p + p { margin-top: 1em; }
+  .proj-section .content em,
+  .proj-section .content i { font-style: italic; }
+
+  /* Credits-style key/value list */
+  .kv-list { font-family: var(--mono); font-size: 13px; line-height: 1.8; }
+  .kv-list .row { display: grid; grid-template-columns: 130px 1fr; gap: 24px; padding: 4px 0; }
+  .kv-list .key { color: var(--muted); }
+  .kv-list .val { color: var(--fg); }
+  .kv-list .val a { border-bottom: 1px solid var(--fg); }
+  .kv-list .val a:hover { background: var(--fg); color: var(--bg); }
+
+  /* Hero image */
+  .hero { margin-top: 32px; margin-bottom: 16px; }
+  .hero img { display: block; width: 100%; height: auto; border: 1px solid var(--rule); }
+  .hero-caption {
+    font-family: var(--mono);
+    font-size: 11px;
+    color: var(--muted);
+    margin-top: 10px;
+    letter-spacing: 0.02em;
+  }
+
+  /* Image grid */
+  .image-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 16px; }
+  .image-grid figure { margin: 0; }
+  .image-grid img { width: 100%; display: block; border: 1px solid var(--rule); }
+  .image-grid figcaption {
+    font-family: var(--mono);
+    font-size: 11px;
+    color: var(--muted);
+    margin-top: 6px;
+  }
+
+  /* ── Origin markers ─────────────────────────────────────────── */
+  .origin-tag {
+    font-family: var(--mono);
+    font-size: 10px;
+    letter-spacing: 0.08em;
+    text-transform: uppercase;
+    display: inline-block;
+    padding: 2px 8px;
+    margin-right: 8px;
+    border: 1px solid var(--rule);
+  }
+  .origin-tag.original { background: var(--fg); color: var(--bg); }
+  .origin-tag.extension { background: var(--bg); color: var(--accent); border-color: var(--accent); }
+  .origin-note {
+    font-family: var(--mono);
+    font-size: 11px;
+    color: var(--muted);
+    margin-top: 20px;
+    padding-top: 12px;
+    border-top: 1px solid var(--rule);
+    line-height: 1.7;
+  }
+  .origin-note .o { font-weight: 700; color: var(--fg); }
+  .origin-note .e { font-weight: 700; color: var(--accent); }
+
+  /* ── Visualiser ─────────────────────────────────────────────── */
+  .viz-wrap {
+    border: 1px solid var(--rule); margin-top: 32px;
+  }
+  .viz-head {
+    display: flex; justify-content: space-between; align-items: center;
+    padding: 10px 16px; border-bottom: 1px solid var(--rule);
+    font-family: var(--mono); font-size: 10px; font-weight: 700;
+    letter-spacing: 0.12em; text-transform: uppercase;
+  }
+  .viz-head .r { font-weight: 400; }
+  .viz-controls {
+    display: flex; gap: 0; border-bottom: 1px solid var(--rule);
+  }
+  .viz-controls button {
+    font-family: var(--mono); font-size: 11px; font-weight: 700;
+    letter-spacing: 0.1em; text-transform: uppercase;
+    padding: 12px 20px; background: var(--bg); color: var(--fg);
+    border: none; border-right: 1px solid var(--rule);
+    cursor: pointer; transition: background 0.08s, color 0.08s;
+  }
+  .viz-controls button:hover, .viz-controls button.active { background: var(--fg); color: var(--bg); }
+  .viz-controls .spacer { flex: 1; }
+  .viz-controls .info {
+    padding: 12px 16px; font-size: 11px; color: var(--muted);
+    display: flex; align-items: center; gap: 8px;
+  }
+  .viz-preset-row {
+    display: flex; gap: 0; border-bottom: 1px solid var(--rule);
+  }
+  .viz-preset-row .lbl {
+    padding: 8px 14px; font-size: 10px; font-weight: 700;
+    letter-spacing: 0.1em; text-transform: uppercase; color: var(--muted);
+    border-right: 1px solid var(--rule);
+    display: flex; align-items: center;
+  }
+  .viz-preset-row button {
+    font-family: var(--mono); font-size: 11px; font-weight: 400;
+    padding: 8px 14px; background: var(--bg); color: var(--fg);
+    border: none; border-right: 1px solid var(--rule);
+    cursor: pointer; transition: background 0.08s, color 0.08s;
+  }
+  .viz-preset-row button:hover, .viz-preset-row button.active { background: var(--fg); color: var(--bg); font-weight: 700; }
+  .viz-stages {
+    display: grid;
+    grid-template-columns: 80px 120px 100px 140px 200px 150px 90px;
+    gap: 12px; padding: 20px 12px;
+  }
+  .viz-stage-label {
+    font-size: 9px; font-weight: 700; letter-spacing: 0.1em;
+    text-transform: uppercase; color: var(--accent);
+    margin-bottom: 8px; padding-bottom: 4px;
+    border-bottom: 1px solid var(--accent);
+  }
+  .viz-block {
+    border: 1px solid var(--fg); margin-bottom: 12px;
+    transition: border-color 0.15s, box-shadow 0.15s;
+  }
+  .viz-block.highlight { border-color: var(--accent); box-shadow: 0 0 0 1px var(--accent); }
+  .viz-block-head {
+    padding: 6px 8px; border-bottom: 1px solid var(--fg);
+    font-size: 9px; font-weight: 700; letter-spacing: 0.08em;
+    text-transform: uppercase;
+  }
+  .viz-block-body { padding: 8px; }
+  .viz-bits { display: flex; gap: 1px; flex-wrap: wrap; }
+  .viz-bit {
+    width: 16px; height: 16px;
+    display: flex; align-items: center; justify-content: center;
+    font-size: 9px; font-weight: 700;
+    border: 1px solid var(--fg);
+    transition: background 0.12s, color 0.12s, border-color 0.12s;
+  }
+  .viz-bit.on { background: var(--fg); color: var(--bg); }
+  .viz-bit.changed { border-color: var(--accent); background: var(--accent); color: #fff; }
+  .viz-bit-label { font-size: 8px; color: var(--muted); margin-top: 2px; display: flex; gap: 1px; }
+  .viz-bit-label span { width: 16px; text-align: center; }
+  .viz-slider-row {
+    display: grid; grid-template-columns: 50px 1fr; gap: 6px;
+    padding: 3px 0; font-size: 10px; align-items: center;
+    border-bottom: 1px solid #eee;
+  }
+  .viz-slider-row:last-child { border-bottom: none; }
+  .viz-slider-name { color: var(--muted); font-size: 9px; }
+  .viz-slider-val { font-weight: 700; font-size: 10px; }
+  .viz-slider-val.changed { color: var(--accent); }
+  .viz-big { font-size: 22px; font-weight: 300; text-align: center; padding: 8px 0; letter-spacing: -0.02em; transition: color 0.15s; }
+  .viz-big.changed { color: var(--accent); }
+  .viz-small { font-size: 9px; color: var(--muted); text-align: center; margin-top: 2px; }
+  .viz-output-box { background: var(--fg); color: var(--bg); text-align: center; padding: 14px 8px; }
+  .viz-output-pitch { font-size: 20px; font-weight: 300; letter-spacing: -0.02em; }
+  .viz-output-note { font-size: 9px; margin-top: 4px; color: #999; }
+  .viz-explain {
+    font-size: 10px; line-height: 1.5; color: var(--muted);
+    margin-top: 10px; padding-top: 8px;
+    border-top: 1px solid #eee;
+  }
+  .viz-melody { padding: 12px 16px; border-top: 1px solid var(--rule); }
+  .viz-melody-label { font-size: 9px; font-weight: 700; letter-spacing: 0.1em; text-transform: uppercase; color: var(--muted); margin-bottom: 8px; }
+  .viz-melody-strip { display: flex; gap: 1px; height: 60px; align-items: flex-end; }
+  .viz-mel-bar { flex: 1; max-width: 10px; min-width: 3px; background: var(--fg); transition: height 0.1s; }
+  .viz-mel-bar.latest { background: var(--accent); }
+  .viz-log { padding: 12px 16px; border-top: 1px solid var(--rule); max-height: 120px; overflow-y: auto; }
+  .viz-log-entry { font-size: 10px; line-height: 1.5; color: var(--muted); padding: 1px 0; border-bottom: 1px solid #f5f5f5; }
+  .viz-log-entry .sn { color: var(--fg); font-weight: 700; display: inline-block; width: 40px; }
+  .viz-log-entry .act { color: var(--accent); }
+
+  /* ── Chain toggles ──────────────────────────────────── */
+  .viz-chain {
+    display: flex; gap: 0; border-bottom: 1px solid var(--rule);
+  }
+  .viz-chain-lbl {
+    padding: 10px 14px; font-size: 10px; font-weight: 700;
+    letter-spacing: 0.1em; text-transform: uppercase; color: var(--muted);
+    border-right: 1px solid var(--rule);
+    display: flex; align-items: center;
+  }
+  .viz-chain button {
+    font-family: var(--mono); font-size: 11px; font-weight: 400;
+    padding: 10px 14px; background: var(--bg); color: var(--muted);
+    border: none; border-right: 1px solid var(--rule);
+    cursor: pointer; transition: background 0.12s, color 0.12s;
+    position: relative;
+  }
+  .viz-chain button:hover { background: #f0f0f0; }
+  .viz-chain button.on { background: var(--fg); color: var(--bg); font-weight: 700; }
+  .viz-chain button .chain-arrow {
+    font-size: 9px; margin-left: 6px; color: var(--accent); opacity: 0.4;
+  }
+  .viz-chain button.on .chain-arrow { opacity: 1; }
+
+  /* Dimmed stages */
+  .viz-stages > div { transition: opacity 0.2s; }
+  .viz-stages > div.dimmed { opacity: 0.15; pointer-events: none; }
+
+  @media (max-width: 1100px) {
+    .viz-stages { grid-template-columns: 1fr 1fr; }
+  }
+  @media (max-width: 600px) {
+    .viz-stages { grid-template-columns: 1fr; }
+    .viz-chain { flex-wrap: wrap; }
+  }
+
+  /* Two-col image grid */
+  .image-grid-2 { display: grid; grid-template-columns: 1fr 1fr; gap: 16px; }
+  .image-grid-2 figure { margin: 0; }
+  .image-grid-2 img { width: 100%; display: block; border: 1px solid var(--rule); }
+  .image-grid-2 figcaption {
+    font-family: var(--mono);
+    font-size: 11px;
+    color: var(--muted);
+    margin-top: 6px;
+  }
+
+  /* Item list */
+  .item-list { list-style: none; border-top: 1px solid var(--rule); }
+  .item-list li {
+    display: grid;
+    grid-template-columns: 110px 1fr 1fr;
+    gap: 24px;
+    padding: 14px 0;
+    border-bottom: 1px solid var(--rule);
+    font-size: 14px;
+    line-height: 1.4;
+  }
+  .item-list .date {
+    font-family: var(--mono);
+    font-size: 12px;
+    letter-spacing: 0.02em;
+    color: var(--muted);
+    padding-top: 2px;
+  }
+  .item-list .title { font-weight: 400; color: var(--fg); }
+  .item-list .where { color: var(--muted); padding-top: 1px; }
+
+  /* Preset table */
+  .preset-table { width: 100%; border-collapse: collapse; font-family: var(--mono); font-size: 12px; margin-top: 16px; }
+  .preset-table th {
+    text-align: left;
+    font-weight: 400;
+    font-size: 11px;
+    color: var(--muted);
+    padding: 8px 12px 8px 0;
+    border-bottom: 1px solid var(--rule);
+  }
+  .preset-table td {
+    padding: 6px 12px 6px 0;
+    border-bottom: 1px solid var(--rule);
+    vertical-align: top;
+    line-height: 1.5;
+  }
+
+  /* Footer */
+  footer {
+    display: grid;
+    grid-template-columns: 100px repeat(3, 1fr);
+    gap: 32px;
+    margin-top: 96px;
+    padding-top: 24px;
+    border-top: 1px solid var(--rule);
+    font-family: var(--mono);
+    font-size: 11px;
+  }
+  footer h4 { color: var(--muted); font-weight: 400; margin-bottom: 10px; }
+  footer p { line-height: 1.6; }
+  footer .colophon { color: var(--muted); }
+  footer a { border-bottom: 1px solid transparent; }
+  footer a:hover { border-bottom-color: var(--fg); }
+
+  /* ── Responsive ────────────────────────────────────────────── */
+  @media (max-width: 900px) {
+    .frame { padding: 24px 28px 60px; }
+    .nav-grid { grid-template-columns: 1fr 1fr; gap: 0 24px; }
+    .nav-grid > .cell:first-child { grid-column: 1 / -1; }
+    .nav-grid .gap { display: none; }
+    .breadcrumb { margin-top: 64px; }
+    .proj-tagline { font-size: 18px; }
+    .proj-section { grid-template-columns: 1fr; gap: 12px; margin-bottom: 48px; margin-top: 48px; }
+    .kv-list .row { grid-template-columns: 110px 1fr; gap: 16px; }
+    .image-grid { grid-template-columns: 1fr 1fr; }
+    .image-grid-2 { grid-template-columns: 1fr; }
+    footer { grid-template-columns: 1fr; gap: 24px; margin-top: 64px; }
+    footer > div:first-child { display: none; }
+  }
+  @media (max-width: 480px) {
+    .frame { padding: 16px 16px 48px; }
+    .nav-grid { grid-template-columns: 1fr; gap: 0; }
+    .nav-grid > .cell { border-top: none; padding: 16px 0 18px; }
+    .nav-grid > .cell:first-of-type { border-top: 1px solid var(--rule); }
+    .proj-tagline { font-size: 16px; }
+    .proj-section .content { font-size: 14px; }
+    .image-grid { grid-template-columns: 1fr; }
+    footer { font-size: 10px; }
+  }
+
+  /* Print */
+  @media print {
+    .nav-grid { display: none; }
+    .frame { padding: 0; max-width: none; }
+    .proj-section { break-inside: avoid; }
+    a.body-link { border-bottom: none; }
+  }
+</style>
+</head>
+<body>
+
+<div class="frame">
+
+  <!-- ── PROJECT TAGLINE ─────────────────────────────────────── -->
+  <header class="proj-header">
+    <p class="proj-tagline">The Triadex Muse: deterministic composition machine — a SuperCollider reimplementation of the algorithmic music composer designed by Edward Fredkin and Marvin Minsky at MIT (1969). <em>Presentation notes for 30-minute talk with live demonstration.</em></p>
+  </header>
+
+  <!-- ── HERO: SC interface ──────────────────────────────────── -->
+  <figure class="hero">
+    <img src="img/sc-interface-full.png" alt="Triadex Muse SuperCollider implementation — main interface with source matrix, sliders, and light show">
+    <figcaption class="hero-caption">_Triadex Muse — SuperCollider implementation with source matrix, melody history, and light show visualisation</figcaption>
+  </figure>
+
+
+  <!-- ══════════════════════════════════════════════════════════ -->
+  <!-- I. HISTORICAL CONTEXT                                     -->
+  <!-- ══════════════════════════════════════════════════════════ -->
+  <section class="proj-section">
+    <div class="label">_I. context</div>
+    <div class="content">
+      <p>The Triadex Muse was designed by <em>Edward Fredkin</em> (computer scientist) and <em>Marvin Minsky</em> (AI researcher) at MIT in 1969, commercially released by the Triadex company in 1972. About 280 units were ever built. It is one of the first algorithmic music machines: a device that composes, not synthesises.</p>
+      <p>The Muse contains no randomness. Its entire output is determined by eight slider positions and an initial state. Yet it produces melodies that sound composed, surprising, and varied. This paradox sits at the centre of the instrument's interest.</p>
+      <p>Maryanne Amacher used the Muse extensively during her MIT fellowship at the Center for Advanced Visual Studies (1972-1976). She created her unpublished <em>Tone and Interval Studies</em> (18 quarter-inch tapes, 1976-78) using Minsky's Muse, and documented her psychoacoustic experiments in the <em>Additional Tones</em> workbook (Workbook IV, 1976/rev. 1987).</p>
+
+      <div class="kv-list" style="margin-top: 24px;">
+        <div class="row"><span class="key">designers</span><span class="val">Edward Fredkin, Marvin Minsky (MIT, 1969)</span></div>
+        <div class="row"><span class="key">patent</span><span class="val"><a href="https://www.google.com/patents/US3610801" target="_blank" rel="noopener noreferrer">US 3,610,801</a> (1971)</span></div>
+        <div class="row"><span class="key">units built</span><span class="val">~280</span></div>
+        <div class="row"><span class="key">sliders</span><span class="val">8 (40 positions each)</span></div>
+        <div class="row"><span class="key">config space</span><span class="val">40^8 = 6.55 * 10^12</span></div>
+        <div class="row"><span class="key">shift register</span><span class="val">31-bit LFSR</span></div>
+        <div class="row"><span class="key">reference</span><span class="val"><a href="https://till.com/articles/muse/" target="_blank" rel="noopener noreferrer">J. Donald Tillman, JavaScript emulation</a></span></div>
+      </div>
+    </div>
+  </section>
+
+
+  <!-- ══════════════════════════════════════════════════════════ -->
+  <!-- II. INSTRUMENT LOGIC                                      -->
+  <!-- ══════════════════════════════════════════════════════════ -->
+  <section class="proj-section">
+    <div class="label">_II. architecture</div>
+    <div class="content" style="max-width: none;">
+      <p>Everything in this section describes the original hardware as designed by Fredkin and Minsky. The architecture, the counters, the shift register, the XNOR feedback, the selector matrix, the pitch table — all of this is the 1969 circuit. My SC implementation reproduces this logic faithfully, verified against Tillman's reverse engineering and the patent.</p>
+      <p style="margin-top: 16px;">On each clock tick the Muse executes five operations: (1) read theme slider sources, compute XNOR feedback; (2) advance binary counters; (3) on every second tick, advance the shift register; (4) read interval slider sources to form a 4-bit note value; (5) map through an 8-note scale. Counter sources produce periodic patterns at powers-of-two rates. Shift register sources produce aperiodic patterns from XNOR feedback. The interplay between these two source types is where the music originates.</p>
+
+      <!-- Architecture diagram from research page -->
+      <figure style="margin-top: 32px;">
+        <img src="img/Screenshot 2026-05-18 at 10.08.04.png" alt="Triadex Muse architecture diagram — timing, binary sources, selector matrix, logic, output" style="width: 100%; display: block; border: 1px solid var(--rule);">
+        <figcaption style="font-family: var(--mono); font-size: 11px; color: var(--muted); margin-top: 10px;">FIG. 1 — Architecture: timing, binary sources, selector matrix, logic, output. No randomness. No stored sequences. The 8 slider positions are the only input.</figcaption>
+      </figure>
+
+      <!-- Patent drawings -->
+      <div class="image-grid" style="margin-top: 32px;">
+        <figure>
+          <img src="img/US3610801-drawings-page-2.png" alt="US Patent 3,610,801 — FIG. 1: system block diagram">
+          <figcaption>_patent FIG. 1 — system block diagram</figcaption>
+        </figure>
+        <figure>
+          <img src="img/US3610801-drawings-page-3.png" alt="US Patent 3,610,801 — FIGS. 2-5: grace, tempo, octave selectors">
+          <figcaption>_patent FIGS. 2-5 — grace, tempo, octave</figcaption>
+        </figure>
+        <figure>
+          <img src="img/US3610801-drawings-page-4.png" alt="US Patent 3,610,801 — FIG. 6: alternative embodiment">
+          <figcaption>_patent FIG. 6 — alternative embodiment</figcaption>
+        </figure>
+      </div>
+      <p style="font-family: var(--mono); font-size: 11px; color: var(--muted); margin-top: 12px;">Source: Edward Fredkin &amp; Marvin L. Minsky, <a class="body-link" href="https://www.google.com/patents/US3610801" target="_blank" rel="noopener noreferrer">US Patent 3,610,801</a> (1971)</p>
+
+      <!-- ── INTERACTIVE VISUALISER ──────────────────────────── -->
+      <div class="viz-wrap" id="viz">
+        <div class="viz-head">
+          <span>Architecture Explorer — build the signal chain</span>
+          <span class="r">step <span id="step-num">0</span></span>
+        </div>
+        <div class="viz-chain">
+          <div class="viz-chain-lbl">Chain</div>
+          <button data-stage="0" class="on">1. Clock<span class="chain-arrow">&rarr;</span></button>
+          <button data-stage="1">2a. Counter<span class="chain-arrow">&rarr;</span></button>
+          <button data-stage="2">2b. Div-3<span class="chain-arrow">&rarr;</span></button>
+          <button data-stage="3">2c. Shift Reg<span class="chain-arrow">&rarr;</span></button>
+          <button data-stage="4">3. Matrix<span class="chain-arrow">&rarr;</span></button>
+          <button data-stage="5">4. Logic<span class="chain-arrow">&rarr;</span></button>
+          <button data-stage="6">5. Output</button>
+        </div>
+        <div class="viz-controls">
+          <button id="btn-tick">Tick</button>
+          <button id="btn-ff">FF x64</button>
+          <button id="btn-auto">Auto</button>
+          <button id="btn-reset">Reset</button>
+          <div class="spacer"></div>
+          <div class="info">tempo <span id="tempo-v">4</span> Hz</div>
+          <div class="info"><input type="range" id="tempo" min="1" max="20" value="4" style="width:70px;"></div>
+          <div class="info">pitch <span id="pitch-base-v">C4</span></div>
+          <div class="info"><input type="range" id="pitch-base" min="36" max="96" value="60" style="width:70px;"></div>
+        </div>
+        <div class="viz-preset-row">
+          <div class="lbl">Preset</div>
+          <button class="active" data-preset="scale">Scale</button>
+          <button data-preset="birds1">Birds 1</button>
+          <button data-preset="meditation">Meditation</button>
+          <button data-preset="musers">Musers Waltz</button>
+          <button data-preset="bells">Christmas Bells</button>
+        </div>
+
+        <div class="viz-stages">
+          <!-- 1. CLOCK -->
+          <div>
+            <div class="viz-stage-label">1. Clock</div>
+            <div class="viz-block" id="blk-clock">
+              <div class="viz-block-head">Clock</div>
+              <div class="viz-block-body">
+                <div class="viz-big" id="clock-pulse">0</div>
+                <div class="viz-small">tick count</div>
+              </div>
+            </div>
+            <div class="viz-explain">A steady pulse. Each tick advances the entire machine by one step. This is the tempo knob on the original hardware. Nothing else happens without it.</div>
+          </div>
+          <!-- 2a. COUNTER -->
+          <div>
+            <div class="viz-stage-label">2a. Counter</div>
+            <div class="viz-block" id="blk-counter">
+              <div class="viz-block-head">5-Bit Counter</div>
+              <div class="viz-block-body">
+                <div class="viz-bits" id="counter-bits"></div>
+                <div class="viz-bit-label" id="counter-labels"></div>
+                <div style="margin-top:6px;font-size:9px;color:var(--muted);">c32 = <span id="c32-dec">1</span></div>
+              </div>
+            </div>
+            <div class="viz-explain">Counts in binary: 0, 1, 2, 3... up to 31, then wraps to 0. Each bit toggles at half the rate of the previous one. C&frac12; flips every tick. C1 every 2 ticks. C2 every 4. C4 every 8. C8 every 16. These are perfectly periodic rhythms at powers-of-two rates.</div>
+          </div>
+          <!-- 2b. DIV-3 -->
+          <div>
+            <div class="viz-stage-label">2b. Div-3</div>
+            <div class="viz-block" id="blk-div3">
+              <div class="viz-block-head">Div-by-3</div>
+              <div class="viz-block-body">
+                <div class="viz-bits" id="div3-bits"></div>
+                <div class="viz-bit-label" id="div3-labels"></div>
+                <div style="margin-top:6px;font-size:9px;color:var(--muted);">c6 = <span id="c6-dec">0</span></div>
+              </div>
+            </div>
+            <div class="viz-explain">Divides the clock by 3 and by 6. Advances every second tick. Produces two signals (C3, C6) that cycle at rates which don't align with the binary counter. This is where cross-rhythms appear: 3 against 2, 6 against 4.</div>
+          </div>
+          <!-- 2c. SHIFT REGISTER -->
+          <div>
+            <div class="viz-stage-label">2c. Shift Reg</div>
+            <div class="viz-block" id="blk-sr">
+              <div class="viz-block-head">31-Bit LFSR</div>
+              <div class="viz-block-body">
+                <div class="viz-bits" id="sr-bits"></div>
+                <div style="margin-top:6px;font-size:9px;color:var(--muted);">B1 (newest) .. B31</div>
+              </div>
+            </div>
+            <div class="viz-explain">A chain of 31 memory cells. Every second tick, all bits shift one position to the right. A new bit enters at B1 (from the XNOR gate in stage 4). Deep positions like B20 or B31 carry information from hundreds of ticks ago. This is the instrument's long-term memory.</div>
+          </div>
+          <!-- 3. SELECTOR MATRIX -->
+          <div>
+            <div class="viz-stage-label">3. Matrix</div>
+            <div class="viz-block" id="blk-theme">
+              <div class="viz-block-head">Theme (W X Y Z)</div>
+              <div class="viz-block-body" id="theme-sliders"></div>
+            </div>
+            <div class="viz-block" id="blk-interval">
+              <div class="viz-block-head">Interval (A B C D)</div>
+              <div class="viz-block-body" id="interval-sliders"></div>
+            </div>
+            <div class="viz-explain">The only thing the user controls. 8 sliders, each choosing one of the 40 binary signals from above. The top 4 (Theme) control feedback into the shift register. The bottom 4 (Interval) control which note plays. Same pool of 40 signals, different purpose.</div>
+          </div>
+          <!-- 4. LOGIC -->
+          <div>
+            <div class="viz-stage-label">4. Logic</div>
+            <div class="viz-block" id="blk-xnor">
+              <div class="viz-block-head">XNOR Gate</div>
+              <div class="viz-block-body">
+                <div class="viz-small" id="xnor-inputs">--</div>
+                <div class="viz-big" id="xnor-out">--</div>
+                <div class="viz-small">new bit &rarr; B1</div>
+              </div>
+            </div>
+            <div class="viz-block" id="blk-pitch">
+              <div class="viz-block-head">Pitch Table</div>
+              <div class="viz-block-body">
+                <div class="viz-bits" id="dcba-bits"></div>
+                <div class="viz-bit-label"><span>A</span><span>B</span><span>C</span><span>D</span></div>
+                <div class="viz-big" id="pitch-val">--</div>
+                <div class="viz-small" id="pitch-note">--</div>
+              </div>
+            </div>
+            <div class="viz-explain"><strong>XNOR:</strong> do the 4 theme signals agree? If yes, output 1. If any disagree, output 0. This single bit feeds back into the shift register at B1. This is what makes the Muse more than a counter.<br><strong>Pitch:</strong> the 4 interval signals form a number (0-15) that maps into an 8-note scale. Bits A, B, C choose the note. Bit D adds one octave.</div>
+          </div>
+          <!-- 5. OUTPUT -->
+          <div>
+            <div class="viz-stage-label">5. Output</div>
+            <div class="viz-block">
+              <div class="viz-block-head">Output</div>
+              <div class="viz-output-box">
+                <div class="viz-output-pitch" id="out-pitch">--</div>
+                <div class="viz-output-note" id="out-label">activate stages</div>
+              </div>
+            </div>
+            <div class="viz-explain">A square wave at the pitch determined by the interval sliders and scale mapping. This is what the Muse sounds like. Everything before this point is the hidden control architecture that produces the melody.</div>
+          </div>
+        </div>
+
+        <div class="viz-melody">
+          <div class="viz-melody-label">Melody (last 64 steps)</div>
+          <div class="viz-melody-strip" id="melody-strip"></div>
+        </div>
+        <div class="viz-log" id="log"></div>
+      </div>
+
+    </div>
+  </section>
+
+
+  <!-- ══════════════════════════════════════════════════════════ -->
+  <!-- II-b. THE SOUND                                           -->
+  <!-- ══════════════════════════════════════════════════════════ -->
+  <section class="proj-section">
+    <div class="label">_II-b. sound</div>
+    <div class="content">
+      <p>The original Triadex Muse produced a <em>square wave</em> through a divide-down oscillator. A single frequency, 50% duty cycle pulse, sent directly to a small built-in speaker. No filter, no envelope, no amplitude shaping, no portamento between notes. The timbre was absolutely fixed: every note had identical harmonic content (odd harmonics at 1/n amplitude rolloff). The only variation was pitch and rhythm.</p>
+      <p>The sound was raw, buzzy, and digital in character. Notes clicked on and off with no transition. At low tempos each note rang as a steady tone; at high tempos the sequence became a rapid chirping. The built-in speaker added its own colouration, but the electrical signal itself was a pure square wave at whatever frequency the resistor network selected.</p>
+      <p>This austerity is part of the instrument's identity. The Muse makes no attempt to sound like anything other than what it is: a binary state toggling a voltage level. All musical interest comes from the <em>sequence</em>, not the <em>sound</em>. The fact that listeners hear melody, phrasing, and development in a stream of identical square wave tones is itself evidence for the strength of the underlying algorithmic structure.</p>
+      <div class="origin-note">
+        <span class="o">Original:</span> square wave from a divide-down oscillator, fixed timbre, built-in speaker.<br>
+        <span class="e">My extension:</span> the <em>faithful</em> synthesis type reproduces this (band-limited Pulse at 50% width). The six other synthesis types (sine, saw, FM, pluck, DPOAE, enhanced) are my additions — they let the same deterministic sequence inhabit different timbral surfaces.
+      </div>
+    </div>
+  </section>
+
+
+  <!-- ══════════════════════════════════════════════════════════ -->
+  <!-- III. SC IMPLEMENTATION                                    -->
+  <!-- ══════════════════════════════════════════════════════════ -->
+  <section class="proj-section">
+    <div class="label">_III. software</div>
+    <div class="content" style="max-width: none;">
+      <p>This entire section is my work — the SC implementation. The algorithmic engine faithfully reproduces the original hardware logic (verified against Tillman's reverse engineering and the patent). Everything else — the four-layer class architecture, the GUI, the multi-voice sync, the effects chain — is new.</p>
+
+      <div class="kv-list" style="margin-top: 24px;">
+        <div class="row"><span class="key">engine</span><span class="val">TriadexMuse — pure algorithm, step() -> pitch (Float or nil)</span></div>
+        <div class="row"><span class="key">audio</span><span class="val">TriadexMusePlayer — 7 SynthDefs, TempoClock, effects, sync</span></div>
+        <div class="row"><span class="key">interface</span><span class="val">TriadexMuseGUI — sliders, source matrix, SR viz, melody history</span></div>
+        <div class="row"><span class="key">launcher</span><span class="val">TriadexMuseApplication — server boot, lifecycle, multi-instance sync</span></div>
+      </div>
+
+      <div class="kv-list" style="margin-top: 32px; border-top: 1px solid var(--rule); padding-top: 16px;">
+        <div class="row"><span class="key">synth: faithful</span><span class="val">band-limited Pulse (square wave), matching hardware</span></div>
+        <div class="row"><span class="key">synth: sine</span><span class="val">pure SinOsc</span></div>
+        <div class="row"><span class="key">synth: saw</span><span class="val">band-limited sawtooth with gentle LPF</span></div>
+        <div class="row"><span class="key">synth: fm</span><span class="val">2-operator FM (mod ratio 3.51)</span></div>
+        <div class="row"><span class="key">synth: pluck</span><span class="val">Karplus-Strong via Pluck UGen</span></div>
+        <div class="row"><span class="key">synth: dpoae</span><span class="val">two-tone DPOAE stimulus (f1/f2 ~1.22) — psychoacoustic bridge</span></div>
+        <div class="row"><span class="key">synth: enhanced</span><span class="val">selectable waveform + filter + reverb + delay</span></div>
+      </div>
+
+      <!-- SC and Tillman interfaces side by side -->
+      <div class="image-grid-2" style="margin-top: 32px;">
+        <figure>
+          <img src="img/sc-interface-full.png" alt="SuperCollider implementation — main interface">
+          <figcaption>_SC implementation — source matrix, sliders, light show</figcaption>
+        </figure>
+        <figure>
+          <img src="img/original-js-interface.png" alt="J. Donald Tillman's JavaScript emulation">
+          <figcaption>_reference — Tillman's JavaScript emulation</figcaption>
+        </figure>
+      </div>
+    </div>
+  </section>
+
+
+  <!-- ══════════════════════════════════════════════════════════ -->
+  <!-- IV. SCALE SYSTEM                                          -->
+  <!-- ══════════════════════════════════════════════════════════ -->
+  <section class="proj-section">
+    <div class="label">_IV. scales</div>
+    <div class="content">
+      <p>The original hardware used a resistor network divider producing fixed intervals. This implementation replaces the network with a configurable 8-value float array, enabling microtonal precision. The interval of equivalence (scale[7]) is not hardcoded to 12 semitones. For Bohlen-Pierce it is 19.02 (the tritave); for Carlos Alpha it is 5.46 (non-repeating). The D bit adds this value, whatever it is.</p>
+      <p>37 scale presets are included. The same slider configuration sounds fundamentally different in each scale. Where does the Muse's musicality reside? In the logic, or in the tuning?</p>
+
+      <div class="kv-list" style="margin-top: 24px;">
+        <div class="row"><span class="key">12-TET</span><span class="val">Major, Minor, Dorian, Phrygian, Lydian, Mixolydian, Harmonic Minor, Locrian</span></div>
+        <div class="row"><span class="key">non-diatonic</span><span class="val">Pentatonic, Blues, Whole Tone, Chromatic, Hirajoshi, Pelog, Slendro</span></div>
+        <div class="row"><span class="key">EDO</span><span class="val">7-EDO, 5-EDO, 19-EDO Cluster, 31-EDO Major</span></div>
+        <div class="row"><span class="key">JI</span><span class="val">Ptolemy, 7-Limit, Partch Diamond, Young WTP</span></div>
+        <div class="row"><span class="key">Fokker</span><span class="val">PB 7, 31 Organ</span></div>
+        <div class="row"><span class="key">non-octave</span><span class="val">Bohlen-Pierce Lambda, Carlos Alpha / Beta / Gamma</span></div>
+        <div class="row"><span class="key">other</span><span class="val">Xenakis Sieve, Overtone, Quartertone, Wilson Hexany</span></div>
+        <div class="row"><span class="key">import</span><span class="val">Scala .scl file support (full cent precision)</span></div>
+      </div>
+
+      <div class="origin-note">
+        <span class="o">Original:</span> a fixed resistor ladder producing a C major scale. 8 voltages, not programmable.<br>
+        <span class="e">My extension:</span> the resistor ladder is replaced with a programmable float array. All 37 scale presets, the microtonal support, the non-octave interval of equivalence, and the Scala file import are my additions. The underlying 3-bit indexing and D-bit octave logic remain identical to the hardware.
+      </div>
+    </div>
+  </section>
+
+
+  <!-- ══════════════════════════════════════════════════════════ -->
+  <!-- V. SYNCED INSTANCES                                       -->
+  <!-- ══════════════════════════════════════════════════════════ -->
+  <section class="proj-section">
+    <div class="label">_V. sync</div>
+    <div class="content">
+      <p>Multiple Muse instances share a single TempoClock. One instance drives tempo; others are tempo-locked and can be offset by fractional beats. Each instance has independent slider configuration, scale, synthesis type, and base frequency. The shared clock ensures the internal counters advance simultaneously.</p>
+      <p>This is the core of Amacher's Muse practice: two synced units producing tones in near-consonant relationships designed to trigger psychoacoustic phenomena in the listener's ear. Independent SR states, aligned clocks, incommensurate slider configurations produce emergent interlocking melodies without explicit counterpoint.</p>
+
+      <div class="origin-note">
+        <span class="o">Original:</span> the hardware had a sync jack — two physical units could share a clock. This was a feature of the product.<br>
+        <span class="e">My extension:</span> the shared TempoClock, tempo-locking, fractional beat offsets, independent base frequencies, and the ability to run arbitrary numbers of instances are all SC additions. The underlying principle — shared clock, independent shift registers — is the same.
+      </div>
+    </div>
+  </section>
+
+
+  <!-- ══════════════════════════════════════════════════════════ -->
+  <!-- VI. AMACHER CONNECTION                                    -->
+  <!-- ══════════════════════════════════════════════════════════ -->
+  <section class="proj-section">
+    <div class="label">_VI. Amacher</div>
+    <div class="content">
+      <p>Amacher's <em>Additional Tones</em> workbook (Workbook IV, 1976/rev. 1987) documents systematic experiments with psychoacoustic phenomena: difference tones (F_d = F_2 - F_1), beats of mistuned consonances (near-octave, near-fifth, near-fourth), and fundamental tracking. She operated the Muse at approximately 3,000 Hz for "standing wave phenomena" (her term) and processed the output through a Bode Ring Modulator. The "Well Tuned Ear" range is 800-6,000 Hz.</p>
+      <p>The DPOAE synthesis type in my implementation directly connects to Amacher's practice: it generates two-tone stimuli at ratio ~1.22, optimal for evoking the cubic difference tone 2f1-f2 in the listener's cochlea. This is my addition — the original hardware had no such mode, but the psychoacoustic use was Amacher's.</p>
+      <p>The Amacher papers (approximately 200 boxes of notebooks, scores, tapes) are held at the New York Public Library for the Performing Arts. The 18 <em>Tone and Interval Studies</em> tapes (1976-78) were made with the Muse. The notebooks likely contain the slider configurations she used. No technical analysis of these materials has been published.</p>
+
+      <div class="kv-list" style="margin-top: 24px;">
+        <div class="row"><span class="key">archive</span><span class="val"><a href="https://archives.nypl.org/mus/185461" target="_blank" rel="noopener noreferrer">NYPL finding aid</a></span></div>
+        <div class="row"><span class="key">monograph</span><span class="val">Amy Cimini, <em>Wild Sound</em> (OUP, 2022)</span></div>
+        <div class="row"><span class="key">workbook</span><span class="val"><em>Additional Tones</em> Workbook IV (1976/rev. 1987)</span></div>
+        <div class="row"><span class="key">key freq.</span><span class="val">~3,000 Hz — "Muse business" / standing wave phenomena</span></div>
+        <div class="row"><span class="key">processing</span><span class="val">Bode Ring Modulator</span></div>
+        <div class="row"><span class="key">ear range</span><span class="val">800-6,000 Hz — "Well Tuned Ear"</span></div>
+      </div>
+    </div>
+  </section>
+
+
+  <!-- ══════════════════════════════════════════════════════════ -->
+  <!-- VI-b. REVERSE ENGINEERING ATTEMPT                         -->
+  <!-- ══════════════════════════════════════════════════════════ -->
+  <section class="proj-section">
+    <div class="label">_VI-b. reverse<br>engineering</div>
+    <div class="content">
+      <p>I attempted to recover Amacher's slider configurations directly from the album recordings (<em>Head Rhythm 1</em>, <em>Chorale 1</em>, <em>Synaptic Island</em>) by extracting pitch sequences from the audio and matching them against all possible Muse configurations. The search space is 40<sup>8</sup> = 6.55 trillion possible slider settings, reduced by separating the theme search (40<sup>4</sup> = 2.56 million) from the interval search.</p>
+
+      <p>The inference engine was verified correct: given a clean signal from the emulator, it recovers the known preset (tested with "Scale"). The pipeline included multiple F0 extraction methods (pYIN, CREPE neural pitch tracker, zero-crossing analysis), onset-based and grid-based note segmentation, gap-based pitch clustering, relative contour matching, and Monte Carlo search with hill climbing across all 32 possible starting offsets in the counter cycle.</p>
+
+      <p><strong>Result: zero solutions found across all recordings, all methods, all offsets.</strong></p>
+
+      <p>The failure is not in the inference engine but in the audio. The recordings are the end of a long signal chain:</p>
+
+      <div class="kv-list" style="margin-top: 16px;">
+        <div class="row"><span class="key">config space</span><span class="val">40<sup>8</sup> = 6.55 trillion slider configurations</span></div>
+        <div class="row"><span class="key">x offsets</span><span class="val">32 possible counter starting positions</span></div>
+        <div class="row"><span class="key">x scale</span><span class="val">unknown (may not be default major)</span></div>
+        <div class="row"><span class="key">x ring mod</span><span class="val">Bode Ring Modulator destroys 1:1 pitch mapping</span></div>
+        <div class="row"><span class="key">x room</span><span class="val">album tracks, not line-out recordings</span></div>
+        <div class="row"><span class="key">x 2 voices</span><span class="val">two synced Muses in the Chorale pieces</span></div>
+      </div>
+
+      <p style="margin-top: 16px;">Key finding from spectral analysis: all detected F0 values in the isolated excerpt (<em>sequence_one_run.wav</em>) were 2200-3000 Hz. Initially assumed to be harmonics of a lower fundamental, this was confirmed by Amacher's own workbook as the <strong>intended operating range</strong>: "standing wave phenomena w/ 3,000 Hz Muse business." The ring modulator then creates non-harmonic sidebands, which is why no pitch tracker (pYIN, CREPE, zero-crossing) achieves meaningful confidence on the recordings.</p>
+
+      <p>The NYPL archive remains the realistic path. If Amacher's notebooks contain the slider positions, the problem collapses from 6.55 trillion unknowns to a lookup. The inference pipeline is ready for any clean, unprocessed Muse recording.</p>
+    </div>
+  </section>
+
+
+  <!-- ══════════════════════════════════════════════════════════ -->
+  <!-- VII. PRESETS                                              -->
+  <!-- ══════════════════════════════════════════════════════════ -->
+  <section class="proj-section">
+    <div class="label">_VII. presets</div>
+    <div class="content" style="max-width: none;">
+      <p>20 factory presets transcribed from Tillman's JavaScript emulation. Each uses a different combination of counter and shift-register sources.</p>
+
+      <table class="preset-table">
+        <thead>
+          <tr><th>name</th><th>interval (A, B, C, D)</th><th>theme (W, X, Y, Z)</th></tr>
+        </thead>
+        <tbody>
+          <tr><td>Scale</td><td>C1, C2, C4, OFF</td><td>OFF, OFF, OFF, OFF</td></tr>
+          <tr><td>Michaels Tune</td><td>B7, B8, B5, OFF</td><td>OFF, B4, B23, OFF</td></tr>
+          <tr><td>Musers Waltz</td><td>B10, B8, B7, OFF</td><td>ON, C4, B1, B2</td></tr>
+          <tr><td>Birds 1</td><td>B1, B2, B3, C4</td><td>B30, B31, B31, B31</td></tr>
+          <tr><td>Dorian Muse</td><td>ON, B1, B3, C8</td><td>B1, B16, OFF, OFF</td></tr>
+          <tr><td>Meditation</td><td>B1, B31, B14, OFF</td><td>OFF, OFF, B16, B31</td></tr>
+          <tr><td>Christmas Bells</td><td>B31, B30, B29, B28</td><td>B28, B29, B30, B31</td></tr>
+          <tr><td>Rons Rhapsody</td><td>B6, B9, B6, C 1/2</td><td>B31, C4, OFF, C8</td></tr>
+          <tr><td>Polka</td><td>B1, B13, B11, C 1/2</td><td>C8, B11, B7, B1</td></tr>
+          <tr><td>Yodle</td><td>C8, B2, B5, B6</td><td>OFF, OFF, B1, B31</td></tr>
+        </tbody>
+      </table>
+      <p style="font-family: var(--mono); font-size: 11px; color: var(--muted); margin-top: 8px;">10 of 20 presets shown. Full set includes Eds Rhythm Piece, The Crazy Cuckoo, Birds 2, Mesopotamia, Swiss Yodeler, Marvins Yodel, Federal Row, Als Surprise, Flat Baroque, Rhyming Couplets.</p>
+    </div>
+  </section>
+
+
+  <!-- ══════════════════════════════════════════════════════════ -->
+  <!-- VIII. DEMO PLAN                                           -->
+  <!-- ══════════════════════════════════════════════════════════ -->
+  <section class="proj-section">
+    <div class="label">_VIII. demo plan</div>
+    <div class="content">
+      <p>Live demonstrations to interleave with the talk:</p>
+      <ul class="item-list">
+        <li><span class="date">demo 01</span><span class="title">"Scale" preset — pure counter-driven ascending/descending</span><span class="where">section II</span></li>
+        <li><span class="date">demo 02</span><span class="title">Preset comparison: "Meditation" (sparse) vs. "Birds 1" (dense SR feedback)</span><span class="where">section II / III</span></li>
+        <li><span class="date">demo 03</span><span class="title">Synthesis types: same preset, cycle faithful > sine > fm > pluck > dpoae</span><span class="where">section III</span></li>
+        <li><span class="date">demo 04</span><span class="title">Scale switching: same config, Major > Bohlen-Pierce > Carlos Alpha > Partch</span><span class="where">section IV</span></li>
+        <li><span class="date">demo 05</span><span class="title">Two synced Muses at a 5th, faithful synthesis, slow tempo</span><span class="where">section V</span></li>
+        <li><span class="date">demo 06</span><span class="title">DPOAE mode — four-tone psychoacoustic stimulus, listen for OAEs</span><span class="where">section VI</span></li>
+      </ul>
+    </div>
+  </section>
+
+
+  <!-- ══════════════════════════════════════════════════════════ -->
+  <!-- SOURCES                                                   -->
+  <!-- ══════════════════════════════════════════════════════════ -->
+  <section class="proj-section">
+    <div class="label">_sources</div>
+    <div class="content">
+      <p><strong>Tillman, J. Donald.</strong> "The Triadex Muse." <a class="body-link" href="https://till.com/articles/muse/" target="_blank" rel="noopener noreferrer">till.com/articles/muse/</a></p>
+      <p><strong>Amacher, Maryanne.</strong> <em>Additional Tones</em> Workbook IV (1976/rev. 1987). Maryanne Amacher papers, NYPL.</p>
+      <p><strong>Amacher, Maryanne.</strong> <em>Tone and Interval Studies</em> (1976-1978). 18 tapes. NYPL.</p>
+      <p><strong>Cimini, Amy.</strong> <em>Wild Sound: Maryanne Amacher and the Tenses of Audible Life.</em> Oxford University Press, 2022.</p>
+      <p><strong>Schneider, Bret.</strong> "Groundwork for a Study of Maryanne Amacher." <em>Caesura.</em></p>
+      <p><strong>Roederer, Juan G.</strong> <em>Introduction to the Physics and Psychophysics of Music.</em> Springer, 1975.</p>
+      <p><strong>Oster, Gerald.</strong> "Auditory beats in the brain." <em>Scientific American</em> 229.4 (1973).</p>
+      <p><strong>Kemp, David T.</strong> "Stimulated acoustic emissions from within the human auditory system." <em>JASA</em> 64.5 (1978).</p>
+      <p style="margin-top: 16px;"><strong>NYPL finding aid:</strong> <a class="body-link" href="https://archives.nypl.org/mus/185461" target="_blank" rel="noopener noreferrer">archives.nypl.org/mus/185461</a></p>
+      <p><strong>Computer History Museum:</strong> <a class="body-link" href="https://computerhistory.org/blog/generative-music-with-the-muse/" target="_blank" rel="noopener noreferrer">Generative Music with the Muse</a></p>
+    </div>
+  </section>
+
+
+  <!-- ── FOOTER ─────────────────────────────────────────────── -->
+  <footer>
+    <div></div>
+    <div>
+      <h4>_project</h4>
+      <p>Triadex Muse<br>SuperCollider implementation</p>
+    </div>
+    <div>
+      <h4>_context</h4>
+      <p>Acoustic Ecologies &amp; Sound Studies<br>Bauhaus-Universit&auml;t Weimar</p>
+    </div>
+    <div class="colophon">
+      <h4>_colophon</h4>
+      <p>Set in LL Riforma Mono<br>2026</p>
+    </div>
+  </footer>
+
+</div>
+<script>
+// ── Muse Engine ─────────────────────────────────────────────────
+const SRC_LABELS=['OFF','ON','C\u00bd','C1','C2','C4','C8','C3','C6',...[...Array(31)].map((_,i)=>'B'+(i+1))];
+const SCALE=[0,2,4,5,7,9,11,12];
+const NOTES=['C','D','E','F','G','A','B','C+'];
+const PRESETS={
+  scale:{interval:[3,4,5,0],theme:[0,0,0,0]},
+  birds1:{interval:[9,10,11,5],theme:[38,39,39,39]},
+  meditation:{interval:[9,39,22,0],theme:[0,0,24,39]},
+  musers:{interval:[18,16,15,0],theme:[1,5,9,10]},
+  bells:{interval:[39,38,37,36],theme:[36,37,38,39]},
+};
+let st={c32:1,c6:0,sr:0,step:0},sl={interval:[3,4,5,0],theme:[0,0,0,0]};
+let prev={c32:1,c6:0,sr:0},mel=[],autoI=null;
+
+// ── Chain state: which stages are active ────────────────────────
+// 0=Clock, 1=Counter, 2=Div-3, 3=Shift Reg, 4=Matrix, 5=Logic, 6=Output
+let chain=[true,false,false,false,false,false,false];
+const stageEls=[]; // populated on init
+const stageBtns=[];
+
+// ── Web Audio ───────────────────────────────────────────────────
+let actx=null,currentOsc=null;
+let baseMidi=60;
+const MIDI_NAMES=['C','C#','D','D#','E','F','F#','G','G#','A','A#','B'];
+function midiToName(m){return MIDI_NAMES[m%12]+(Math.floor(m/12)-1);}
+function ensureAudio(){if(!actx)actx=new(window.AudioContext||window.webkitAudioContext)();if(actx.state==='suspended')actx.resume();}
+
+// Click sound for counter/SR bits (short sine ping)
+function playClick(freq,amp){
+  if(!actx)return;
+  const o=actx.createOscillator(),g=actx.createGain();
+  o.type='sine';o.frequency.value=freq;
+  g.gain.value=amp;
+  g.gain.setTargetAtTime(0,actx.currentTime+0.03,0.01);
+  o.connect(g);g.connect(actx.destination);
+  o.start();o.stop(actx.currentTime+0.06);
+}
+
+// Pitched note for output stage (square wave, matching hardware)
+function playNote(pitch){
+  if(currentOsc){try{currentOsc.stop();}catch(e){}}
+  if(!actx)return;
+  const freq=440*Math.pow(2,(baseMidi-69+pitch)/12);
+  const o=actx.createOscillator(),g=actx.createGain();
+  o.type='square';o.frequency.value=freq;g.gain.value=0.12;
+  o.connect(g);g.connect(actx.destination);
+  o.start();currentOsc=o;
+  setTimeout(()=>{if(currentOsc===o){g.gain.setTargetAtTime(0,actx.currentTime,0.02);setTimeout(()=>{try{o.stop();}catch(e){}},50);}},400);
+}
+
+// XNOR gate sound (high ping)
+function playXnor(bit){
+  if(!actx)return;
+  playClick(bit?5000:2500, 0.08);
+}
+
+// ── Engine ──────────────────────────────────────────────────────
+function src(p,c32,c6,sr){
+  if(p===0)return 0;if(p===1)return 1;
+  if(p<7)return(c32>>(p-2))&1;if(p<9)return(c6>>(p-5))&1;
+  if(p<40)return(sr>>(p-9))&1;return 0;
+}
+function tick(){
+  prev={c32:st.c32,c6:st.c6,sr:st.sr};
+  const lp=[];
+  let nb=1;const tb=[];
+  for(let i=0;i<4;i++){const v=src(sl.theme[i],st.c32,st.c6,st.sr);tb.push(v);nb^=v;}
+  lp.push('XNOR: 1\u2295'+tb.join('\u2295')+'='+nb);
+  st.c32=(st.c32+1)&0x1F;lp.push('c32: '+prev.c32+'\u2192'+st.c32);
+  let srA=false;
+  if((st.c32&1)===0){st.c6++;if((st.c6&3)===2)st.c6++;
+    st.sr=((st.sr<<1)|nb)&0x7FFFFFFF;srA=true;
+    lp.push('SR\u2190'+nb+', c6:'+st.c6);}
+  else lp.push('(no SR shift)');
+  let dcba=0;
+  for(let i=0;i<4;i++)dcba|=src(sl.interval[i],st.c32,st.c6,st.sr)<<i;
+  const pitch=SCALE[dcba&7]+SCALE[7]*(dcba>>3);
+  const nn=NOTES[dcba&7]+(dcba>>3?'+8va':'');
+  lp.push('DCBA='+dcba.toString(2).padStart(4,'0')+'\u2192'+pitch+' ('+nn+')');
+  st.step++;mel.push(pitch);if(mel.length>64)mel.shift();
+  return{nb,tb,dcba,pitch,nn,srA,lp};
+}
+
+// ── Rendering ───────────────────────────────────────────────────
+function renderBits(id,val,n,pv){
+  const el=document.getElementById(id);if(!el)return;el.innerHTML='';
+  for(let i=n-1;i>=0;i--){const b=(val>>i)&1,pb=pv!==undefined?(pv>>i)&1:b;
+    const d=document.createElement('div');
+    d.className='viz-bit'+(b?' on':'')+(b!==pb?' changed':'');
+    d.textContent=b;el.appendChild(d);}
+}
+function renderLabels(id,ls){const el=document.getElementById(id);if(el)el.innerHTML=ls.map(l=>'<span>'+l+'</span>').join('');}
+function renderSliders(id,pos,names){
+  const el=document.getElementById(id);if(!el)return;el.innerHTML='';
+  for(let i=0;i<pos.length;i++){const p=pos[i],v=src(p,st.c32,st.c6,st.sr),
+    pv=src(p,prev.c32,prev.c6,prev.sr);
+    const r=document.createElement('div');r.className='viz-slider-row';
+    r.innerHTML='<span class="viz-slider-name">'+names[i]+'</span><span class="viz-slider-val'+(v!==pv?' changed':'')+'">'+SRC_LABELS[p]+' = '+v+'</span>';
+    el.appendChild(r);}
+}
+function renderMelody(){
+  const s=document.getElementById('melody-strip');if(!s)return;s.innerHTML='';
+  for(let i=0;i<mel.length;i++){const b=document.createElement('div');
+    b.className='viz-mel-bar'+(i===mel.length-1?' latest':'');
+    b.style.height=Math.max(2,(mel[i]/24)*56)+'px';s.appendChild(b);}
+}
+function addLog(parts,sn){
+  const l=document.getElementById('log');if(!l)return;
+  const e=document.createElement('div');e.className='viz-log-entry';
+  e.innerHTML='<span class="sn">'+String(sn).padStart(4,'0')+'</span> '+parts.map(p=>'<span class="act">'+p+'</span>').join(' \u00b7 ');
+  l.prepend(e);while(l.children.length>30)l.removeChild(l.lastChild);
+}
+function hlBlock(id){document.querySelectorAll('.viz-block').forEach(b=>b.classList.remove('highlight'));if(id)document.getElementById(id)?.classList.add('highlight');}
+
+function updateChainVisuals(){
+  // Dim inactive stages, show active
+  stageEls.forEach((el,i)=>{el.classList.toggle('dimmed',!chain[i]);});
+  stageBtns.forEach((btn,i)=>{btn.classList.toggle('on',chain[i]);});
+}
+
+function renderAll(r){
+  document.getElementById('step-num').textContent=st.step;
+  document.getElementById('clock-pulse').textContent=st.step;
+  renderBits('counter-bits',st.c32,5,prev.c32);
+  renderLabels('counter-labels',['C8','C4','C2','C1','C\u00bd']);
+  document.getElementById('c32-dec').textContent=st.c32;
+  renderBits('div3-bits',st.c6,4,prev.c6);
+  renderLabels('div3-labels',['b3','b2','C6','C3']);
+  document.getElementById('c6-dec').textContent=st.c6;
+  renderBits('sr-bits',st.sr,31,prev.sr);
+  renderSliders('theme-sliders',sl.theme,['W','X','Y','Z']);
+  renderSliders('interval-sliders',sl.interval,['A','B','C','D']);
+  if(r){
+    document.getElementById('xnor-inputs').textContent='1 \u2295 '+r.tb.join(' \u2295 ');
+    const xe=document.getElementById('xnor-out');xe.textContent=r.nb;xe.className='viz-big'+(r.srA?' changed':'');
+    renderBits('dcba-bits',r.dcba,4);
+    document.getElementById('pitch-val').textContent=r.pitch;
+    document.getElementById('pitch-note').textContent=r.nn;
+    document.getElementById('out-pitch').textContent=r.pitch;
+    document.getElementById('out-label').textContent=r.nn;
+    addLog(r.lp,st.step);
+  }
+  renderMelody();
+}
+
+// ── Sonification per stage ──────────────────────────────────────
+function sonifyTick(r){
+  if(!actx)return;
+
+  // Stage 1 (Counter): 5-bit counter clicks on rising edges
+  if(chain[1]){
+    const counterFreqs=[8000,4000,2000,1000,500];
+    for(let i=0;i<5;i++){
+      const curr=(st.c32>>i)&1, prv=(prev.c32>>i)&1;
+      if(prv===0&&curr===1) playClick(counterFreqs[i],0.06);
+    }
+  }
+
+  // Stage 2 (Div-3): C3 and C6 as cross-rhythm clicks
+  if(chain[2]){
+    const c3curr=(st.c6>>2)&1, c3prev=(prev.c6>>2)&1;
+    const c6curr=(st.c6>>3)&1, c6prev=(prev.c6>>3)&1;
+    if(c3prev===0&&c3curr===1) playClick(3000,0.07);
+    if(c6prev===0&&c6curr===1) playClick(1500,0.07);
+  }
+
+  // Stage 3 (Shift Register): B1 click when new bit enters
+  if(chain[3]&&r.srA){
+    // Pitch of click depends on the new bit value
+    playClick(r.nb?6000:800, 0.08);
+  }
+
+  // Stage 5 (Logic): XNOR gate as high ping
+  if(chain[5]&&r.srA){
+    playXnor(r.nb);
+  }
+
+  // Stage 6 (Output): pitched square wave
+  if(chain[6]){
+    playNote(r.pitch);
+  }
+}
+
+function doTick(){
+  const r=tick();
+  // Highlight active blocks in sequence
+  const activeBlocks=[];
+  if(chain[0]) activeBlocks.push('blk-clock');
+  if(chain[1]) activeBlocks.push('blk-counter');
+  if(chain[2]) activeBlocks.push('blk-div3');
+  if(chain[3]) activeBlocks.push('blk-sr');
+  if(chain[4]) activeBlocks.push('blk-theme','blk-interval');
+  if(chain[5]) activeBlocks.push('blk-xnor','blk-pitch');
+  activeBlocks.forEach((id,i)=>setTimeout(()=>hlBlock(id),i*35));
+  setTimeout(()=>hlBlock(null),activeBlocks.length*35+100);
+  renderAll(r);
+  sonifyTick(r);
+}
+
+function reset(){
+  st={c32:1,c6:0,sr:0,step:0};prev={c32:1,c6:0,sr:0};mel=[];
+  document.getElementById('log').innerHTML='';renderAll(null);
+  ['xnor-out','pitch-val','out-pitch'].forEach(id=>{document.getElementById(id).textContent='--';});
+  ['xnor-inputs','pitch-note'].forEach(id=>{document.getElementById(id).textContent='--';});
+  document.getElementById('out-label').textContent='activate stages';
+  if(currentOsc){try{currentOsc.stop();}catch(e){}currentOsc=null;}
+}
+function loadPreset(n){const p=PRESETS[n];if(!p)return;sl.interval=[...p.interval];sl.theme=[...p.theme];reset();
+  document.querySelectorAll('[data-preset]').forEach(b=>b.classList.toggle('active',b.dataset.preset===n));}
+
+// ── Chain toggle handlers ───────────────────────────────────────
+document.querySelectorAll('[data-stage]').forEach(btn=>{
+  stageBtns.push(btn);
+  btn.addEventListener('click',()=>{
+    const idx=+btn.dataset.stage;
+    chain[idx]=!chain[idx];
+    if(chain[idx]) ensureAudio();
+    // Disabling: also disable all stages after it
+    if(!chain[idx]){
+      for(let i=idx+1;i<7;i++) chain[i]=false;
+    }
+    // Enabling: also enable all stages before it
+    if(chain[idx]){
+      for(let i=0;i<idx;i++) chain[i]=true;
+    }
+    updateChainVisuals();
+  });
+});
+
+// Collect stage column elements
+document.querySelectorAll('.viz-stages > div').forEach(el=>stageEls.push(el));
+
+// ── Control handlers ────────────────────────────────────────────
+document.getElementById('btn-tick').addEventListener('click',doTick);
+document.getElementById('btn-ff').addEventListener('click',function(){
+  for(let i=0;i<64;i++){tick();}
+  renderAll(null);renderAll({nb:0,tb:[0,0,0,0],dcba:0,pitch:mel[mel.length-1]||0,nn:'',srA:false,lp:['FF x64 steps']});
+  document.getElementById('step-num').textContent=st.step;
+  document.getElementById('clock-pulse').textContent=st.step;
+  renderBits('counter-bits',st.c32,5);renderBits('div3-bits',st.c6,4);renderBits('sr-bits',st.sr,31);
+  renderSliders('theme-sliders',sl.theme,['W','X','Y','Z']);renderSliders('interval-sliders',sl.interval,['A','B','C','D']);
+  renderMelody();addLog(['skipped 64 ticks, now at step '+st.step],st.step);
+});
+document.getElementById('btn-auto').addEventListener('click',function(){
+  if(autoI){clearInterval(autoI);autoI=null;this.classList.remove('active');this.textContent='Auto';}
+  else{ensureAudio();autoI=setInterval(doTick,1000/(+document.getElementById('tempo').value));this.classList.add('active');this.textContent='Stop';}
+});
+document.getElementById('btn-reset').addEventListener('click',()=>{
+  if(autoI){clearInterval(autoI);autoI=null;const b=document.getElementById('btn-auto');b.classList.remove('active');b.textContent='Auto';}reset();
+});
+document.getElementById('tempo').addEventListener('input',function(){
+  document.getElementById('tempo-v').textContent=this.value;
+  if(autoI){clearInterval(autoI);autoI=setInterval(doTick,1000/(+this.value));}
+});
+document.getElementById('pitch-base').addEventListener('input',function(){
+  baseMidi=+this.value;
+  document.getElementById('pitch-base-v').textContent=midiToName(baseMidi);
+});
+document.querySelectorAll('[data-preset]').forEach(btn=>btn.addEventListener('click',()=>loadPreset(btn.dataset.preset)));
+
+// ── Init ────────────────────────────────────────────────────────
+reset();
+updateChainVisuals();
+</script>
+</body>
+</html>
