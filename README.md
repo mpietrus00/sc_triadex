@@ -56,9 +56,9 @@ Logic diagrams from the original patent, US 3,610,801 (Fredkin and Minsky):
 
 ![US 3,610,801, drawing sheet 4](docs/img/US3610801-drawings-page-4.png)
 
-A diagram of the sequencing logic worked out during the study:
+An annotated diagram of the sequencing logic worked out during the study:
 
-![Sequencing logic diagram](docs/img/Screenshot%202026-05-18%20at%2010.08.04.png)
+![Annotated diagram of the sequencing logic](docs/img/Screenshot%202026-05-18%20at%2010.08.04.png)
 
 ## Features
 
