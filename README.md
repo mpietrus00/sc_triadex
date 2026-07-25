@@ -13,6 +13,37 @@ slider configuration always produces the same sequence.
 Reference: J. Donald Tillman's JavaScript emulation and writeup,
 <https://till.com/articles/muse/>.
 
+## Research process
+
+This implementation grew out of a study of how the Muse actually produces its
+sequences. The documentation is thin and scattered, so the reconstruction read
+several sources against one another.
+
+The primary source was the original patent, US 3,610,801 (Fredkin and Minsky),
+whose logic diagrams describe the counter chain, the 31-bit shift register, and
+the XNOR feedback path at the gate level. Three of its drawing pages are
+reproduced in `docs/img/`. I read the patent alongside the Triadex Muse
+operating manual, which lays out the slider panel, the forty sources, and the
+factory preset settings but says nothing about the internal logic, together with
+the other accounts of the machine still in circulation, including the SDIY
+discussion thread archived in `docs/`.
+
+Where the patent and manual were silent or ambiguous, I worked from J. Donald
+Tillman's JavaScript emulation and writeup, the most careful public account of
+the machine's behaviour and the source of the twenty presets transcribed here.
+Running the patent logic against Tillman's emulation settled the remaining
+questions about clock division, edge timing, and the exact feedback tap.
+
+Reimplementing the logic in SuperCollider was itself part of the analysis. A
+cycle-accurate model is a hypothesis about the hardware, testable by comparing
+its output against recordings of the original and against Tillman's emulator.
+The engine in `Classes/TriadexMuse.sc` is the result, kept separate from audio
+and GUI so the bare sequencing logic can be read on its own.
+
+A longer study of the sequencing algorithm and the combinatorics behind the
+slider system is on my website:
+<https://www.marcinpietruszewski.com/research-triadex>.
+
 ## Features
 
 - **Faithful engine**: cycle-accurate reproduction of the original logic
