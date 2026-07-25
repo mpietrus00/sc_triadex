@@ -301,6 +301,9 @@ muse.scale_(#[0, 2, 4, 7, 9, 12, 14, 16]); // or set directly
 The original hardware Muse had a sync output for clocking two units together.
 This implementation reproduces that with a shared `TempoClock`.
 
+Video demonstration of two instances playing together in sync:
+<https://www.youtube.com/watch?v=wkb99iAkOyw>.
+
 `TriadexMuseApplication.run` launches the primary instance.
 `TriadexMuseApplication.runSynced` launches additional instances on a shared
 clock. The primary drives tempo; synced instances follow.
