@@ -16,6 +16,16 @@ authors:
     email: studio@marcinpietruszewski.com
 repository-code: "https://github.com/mpietrus00/sc_triadex"
 url: "https://www.marcinpietruszewski.com"
+version: v1.0.0
+date-released: "2026-07-26"
+doi: 10.5281/zenodo.21596926
+identifiers:
+  - type: doi
+    value: 10.5281/zenodo.21596926
+    description: Concept DOI, always resolves to the latest version
+  - type: doi
+    value: 10.5281/zenodo.21596927
+    description: DOI for version v1.0.0
 license: MIT
 keywords:
   - Triadex Muse

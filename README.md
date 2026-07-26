@@ -1,5 +1,7 @@
 # TriadexMuse
 
+[![DOI](https://zenodo.org/badge/DOI/10.5281/zenodo.21596926.svg)](https://doi.org/10.5281/zenodo.21596926)
+
 ![The Triadex Muse implemented in SuperCollider](docs/img/sc-interface-full.png)
 
 A SuperCollider implementation of the **Triadex Muse** (Edward Fredkin and
@@ -339,6 +341,13 @@ pitch-sequence collection, pattern integration, and the full source table.
 ## Citation
 
 If you use sc_triadex in research or published work, please cite it.
+
+Pietruszewski, M. (2026). *sc_triadex: A SuperCollider Reconstruction of the
+Triadex Muse* (version v1.0.0) [Computer software]. Zenodo.
+https://doi.org/10.5281/zenodo.21596926
+
+The DOI above is the concept DOI and always resolves to the latest version. To
+cite this specific release, use https://doi.org/10.5281/zenodo.21596927.
 Machine-readable metadata is in [CITATION.cff](CITATION.cff); GitHub renders a
 formatted citation from it under "Cite this repository" in the sidebar.
 
