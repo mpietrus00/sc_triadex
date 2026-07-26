@@ -335,3 +335,13 @@ pitch-sequence collection, pattern integration, and the full source table.
 - **J. Donald Tillman** -- JavaScript emulation, documentation, and the
   preset transcriptions used here: <https://till.com/articles/muse/>.
 - SuperCollider implementation by Marcin Pietruszewski.
+
+## Citation
+
+If you use sc_triadex in research or published work, please cite it.
+Machine-readable metadata is in [CITATION.cff](CITATION.cff); GitHub renders a
+formatted citation from it under "Cite this repository" in the sidebar.
+
+## License
+
+MIT -- see [LICENSE](LICENSE) for details.

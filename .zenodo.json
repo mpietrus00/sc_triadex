@@ -1,0 +1,23 @@
+{
+  "upload_type": "software",
+  "title": "sc_triadex: A SuperCollider Reconstruction of the Triadex Muse",
+  "description": "<p>sc_triadex reconstructs the Triadex Muse (Edward Fredkin and Marvin Minsky, MIT, 1969/1972) in SuperCollider. The Muse is a deterministic algorithmic composer built from binary counters, a 31-bit linear feedback shift register, and an XNOR feedback gate. The reconstruction reads the original patent US 3,610,801 against the operating manual and later emulations, and documents where the sources disagree.</p>",
+  "creators": [
+    {
+      "name": "Pietruszewski, Marcin",
+      "orcid": "0009-0007-4174-8209"
+    }
+  ],
+  "license": "mit",
+  "access_right": "open",
+  "keywords": [
+    "Triadex Muse",
+    "Fredkin",
+    "Minsky",
+    "algorithmic composition",
+    "linear feedback shift register",
+    "SuperCollider",
+    "media archaeology",
+    "computer music"
+  ]
+}
